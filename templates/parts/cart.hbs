@@ -1,0 +1,44 @@
+<div class="nm-buyer">
+  {{#if buyer}}<img src="{{buyer.img}}" alt="">{{/if}}
+  <div class="nm-buyer-info">
+    {{#if buyers.length}}
+    <select name="buyer" aria-label="{{localize 'NEONMARKET.UI.BuyingAs'}}">
+      {{#each buyers}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+    </select>
+    {{else}}
+    <span class="nm-hint">{{localize "NEONMARKET.UI.PickBuyer"}}</span>
+    {{/if}}
+    {{#if buyer}}<span class="nm-balance">{{labels.balance}} <strong>{{buyer.wealth}}</strong></span>{{/if}}
+    {{#if funds}}<span class="nm-funds">{{localize "NEONMARKET.UI.ShopFunds"}} <strong>{{funds}}</strong></span>{{/if}}
+  </div>
+</div>
+{{#if isSellMode}}
+<div class="nm-cart nm-cart-idle">
+  <p class="nm-hint">{{localize "NEONMARKET.UI.SellHint"}}</p>
+</div>
+{{else}}
+<div class="nm-cart {{#if cart.overBudget}}over{{/if}}">
+  <div class="nm-cart-head">
+    <span><i class="fa-solid fa-cart-shopping"></i> {{labels.cart}} ({{cart.count}})</span>
+  </div>
+  <ul class="nm-cart-lines">
+    {{#each cart.lines}}
+    <li>
+      <img src="{{img}}" alt="">
+      <span class="nm-cart-name">{{name}}{{#if (gt qty 1)}} &times;{{qty}}{{/if}}</span>
+      <span class="nm-cart-price">{{price}}</span>
+      <button type="button" class="nm-icon-btn small" data-action="removeFromCart" data-key="{{key}}" aria-label="{{localize 'NEONMARKET.UI.Remove'}}"><i class="fa-solid fa-xmark"></i></button>
+    </li>
+    {{else}}
+    <li class="nm-hint">{{localize "NEONMARKET.UI.CartEmpty"}}</li>
+    {{/each}}
+  </ul>
+  <div class="nm-cart-total">
+    <span>{{labels.total}}</span><strong>{{cart.total}}</strong>
+  </div>
+  {{#unless cart.empty}}<div class="nm-cart-after">{{localize "NEONMARKET.UI.After"}} <span>{{cart.after}}</span></div>{{/unless}}
+  <button type="button" class="nm-cta nm-checkout" data-action="checkout" {{#unless cart.canCheckout}}disabled{{/unless}}>
+    <i class="fa-solid fa-credit-card"></i> {{labels.checkout}}
+  </button>
+</div>
+{{/if}}

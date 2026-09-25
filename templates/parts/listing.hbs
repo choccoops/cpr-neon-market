@@ -1,0 +1,29 @@
+{{#each listings}}
+<button type="button" class="nm-item tier-{{tierKey}} {{#if focused}}focused{{/if}} {{#if outOfStock}}sold-out{{/if}} {{#unless affordable}}unaffordable{{/unless}}"
+        role="option" aria-selected="{{focused}}" data-action="focus" data-key="{{key}}">
+  <span class="nm-item-img"><img src="{{img}}" alt="" loading="lazy"></span>
+  <span class="nm-item-main">
+    <span class="nm-item-name">{{name}}</span>
+    <span class="nm-item-meta">
+      <span class="nm-item-type">{{type}}</span>
+      {{#if @root.showTiers}}<span class="nm-tier">{{tierLabel}}</span>{{/if}}
+      {{#if upgraded}}<span class="nm-upgraded">{{localize "NEONMARKET.UI.Upgraded"}}</span>{{/if}}
+      {{#if soldBy}}<span class="nm-soldby">{{localize "NEONMARKET.UI.SoldBy" name=soldBy}}</span>{{/if}}
+    </span>
+  </span>
+  <span class="nm-item-side">
+    {{#if listPrice}}<s class="nm-list-price">{{listPrice}}</s>{{/if}}
+    <span class="nm-price">{{price}}{{#if perBox}} <small>{{localize "NEONMARKET.UI.ForN" n=perBox}}</small>{{/if}}</span>
+    {{#if outOfStock}}
+      <span class="nm-stock out">{{@root.labels.outOfStock}}</span>
+    {{else if finiteStock}}
+      <span class="nm-stock {{#if lowStock}}low{{/if}}">{{localize "NEONMARKET.UI.InStock" n=stock}}</span>
+    {{/if}}
+    {{#if amount}}<span class="nm-stock">&times;{{amount}}</span>{{/if}}
+    {{#if inCart}}<span class="nm-incart"><i class="fa-solid fa-cart-shopping"></i> {{inCart}}</span>{{/if}}
+    {{#if discount}}<span class="nm-discount">-{{discount}}%</span>{{/if}}
+  </span>
+</button>
+{{else}}
+<div class="nm-empty">{{emptyText}}</div>
+{{/each}}

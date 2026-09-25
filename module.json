@@ -1,0 +1,47 @@
+{
+  "id": "cpr-neon-market",
+  "title": "Neon Market: Themed Shops for Cyberpunk RED",
+  "description": "Full-screen, themed shop encounters for the Cyberpunk RED - CORE system. Put a clerk on stage, stock the shelves by drag and drop, and run GM-mediated eurobuck trades with buy, sell and buyback.",
+  "version": "1.1.0",
+  "authors": [
+    {
+      "name": "Neon Market contributors"
+    }
+  ],
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "cyberpunk-red-core",
+        "type": "system",
+        "compatibility": {
+          "minimum": "0.92",
+          "verified": "0.92.4"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/neon-market.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "socket": true,
+  "url": "",
+  "manifest": "",
+  "download": "",
+  "license": "MIT",
+  "readme": "README.md",
+  "changelog": "CHANGELOG.md"
+}

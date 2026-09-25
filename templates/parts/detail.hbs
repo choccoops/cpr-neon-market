@@ -1,0 +1,46 @@
+{{#if focus}}
+<div class="nm-detail-body tier-{{focus.tierKey}}">
+  <div class="nm-detail-head">
+    <img class="nm-detail-img" src="{{focus.img}}" alt="">
+    <div>
+      <h2 class="nm-detail-name">{{focus.name}}</h2>
+      <p class="nm-detail-type">{{focus.type}}{{#if showTiers}} <span class="nm-tier">{{focus.tierLabel}}</span>{{/if}}</p>
+    </div>
+  </div>
+  {{#if focus.stats.length}}
+  <dl class="nm-stats">
+    {{#each focus.stats}}<div><dt>{{label}}</dt><dd>{{value}}</dd></div>{{/each}}
+  </dl>
+  {{/if}}
+  {{#if focus.description}}<div class="nm-desc">{{{focus.description}}}</div>{{/if}}
+</div>
+<div class="nm-detail-actions">
+  {{#if focus.soldOut}}
+    <p class="nm-hint">{{labels.outOfStock}}</p>
+  {{else}}
+    {{#if focus.canStep}}
+    <div class="nm-qty" aria-label="{{localize 'NEONMARKET.UI.Quantity'}}">
+      <button type="button" data-action="qtyDown" aria-label="-" {{#if (eq focus.qty 1)}}disabled{{/if}}><i class="fa-solid fa-minus"></i></button>
+      <output>{{focus.qty}}</output>
+      <button type="button" data-action="qtyUp" data-max="{{focus.maxQty}}" aria-label="+" {{#if (eq focus.qty focus.maxQty)}}disabled{{/if}}><i class="fa-solid fa-plus"></i></button>
+      {{#if focus.stepLabel}}<small>{{focus.stepLabel}}</small>{{/if}}
+    </div>
+    {{/if}}
+    <span class="nm-line-total">{{focus.lineTotal}}</span>
+    {{#if isSellMode}}
+    <button type="button" class="nm-cta" data-action="sell" {{#unless focus.canSell}}disabled{{/unless}}>
+      <i class="fa-solid fa-hand-holding-dollar"></i> {{labels.sell}}
+    </button>
+    {{else}}
+    <button type="button" class="nm-cta" data-action="addToCart" {{#unless focus.canAdd}}disabled{{/unless}}>
+      <i class="fa-solid fa-cart-plus"></i> {{localize "NEONMARKET.UI.AddToCart"}}
+    </button>
+    {{/if}}
+  {{/if}}
+</div>
+{{else}}
+<div class="nm-detail-empty">
+  <i class="fa-solid fa-crosshairs" aria-hidden="true"></i>
+  <p>{{#if isSellMode}}{{localize "NEONMARKET.UI.PickToSell"}}{{else}}{{localize "NEONMARKET.UI.PickItem"}}{{/if}}</p>
+</div>
+{{/if}}

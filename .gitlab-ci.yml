@@ -1,0 +1,62 @@
+# Publishes a Foundry-installable release whenever a version tag (v1.2.3) is pushed.
+# Foundry users install from:  https://gitlab.com/<you>/<repo>/-/releases/permalink/latest/downloads/module.json
+# The project must be public for Foundry to download the files.
+
+stages: [build, upload, release]
+
+variables:
+  PACKAGE_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/cpr-neon-market/${CI_COMMIT_TAG}"
+
+.on_version_tag:
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+
+build:
+  extends: .on_version_tag
+  stage: build
+  image: node:20-alpine
+  script:
+    - apk add --no-cache jq zip
+    - for f in $(find scripts -name "*.js"); do node --input-type=module --check < "$f"; done
+    - jq empty module.json lang/*.json
+    - VERSION="${CI_COMMIT_TAG#v}"
+    - >
+      jq --arg v "$VERSION" --arg url "$CI_PROJECT_URL"
+      --arg manifest "$CI_PROJECT_URL/-/releases/permalink/latest/downloads/module.json"
+      --arg download "$CI_PROJECT_URL/-/releases/$CI_COMMIT_TAG/downloads/module.zip"
+      '.version=$v | .url=$url | .manifest=$manifest | .download=$download'
+      module.json > module.tmp && mv module.tmp module.json
+    - awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{if(f)exit} f' CHANGELOG.md > RELEASE_NOTES.md
+    - '[ -s RELEASE_NOTES.md ] || echo "See CHANGELOG.md" > RELEASE_NOTES.md'
+    - zip -r module.zip module.json scripts templates styles lang README.md CHANGELOG.md LICENSE
+  artifacts:
+    paths: [module.json, module.zip, RELEASE_NOTES.md]
+
+upload:
+  extends: .on_version_tag
+  stage: upload
+  image: curlimages/curl:latest
+  script:
+    - 'curl --fail --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file module.json "$PACKAGE_URL/module.json"'
+    - 'curl --fail --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file module.zip "$PACKAGE_URL/module.zip"'
+
+release:
+  extends: .on_version_tag
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "Releasing $CI_COMMIT_TAG"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: $CI_COMMIT_TAG
+    description: ./RELEASE_NOTES.md
+    assets:
+      links:
+        - name: module.json
+          url: "$PACKAGE_URL/module.json"
+          filepath: /module.json
+          link_type: package
+        - name: module.zip
+          url: "$PACKAGE_URL/module.zip"
+          filepath: /module.zip
+          link_type: package

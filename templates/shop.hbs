@@ -1,0 +1,93 @@
+<div class="nm-shell {{rootClass}}" style="{{style}}">
+  <div class="nm-backdrop" aria-hidden="true"></div>
+  <div class="nm-fx" aria-hidden="true"></div>
+
+  {{#if closedBanner}}
+  <div class="nm-banner-closed">
+    <i class="fa-solid fa-lock"></i> {{localize "NEONMARKET.UI.ClosedToPlayers"}}
+  </div>
+  {{/if}}
+  {{#if preview}}
+  <div class="nm-banner-closed nm-banner-preview">
+    <i class="fa-solid fa-eye"></i> {{localize "NEONMARKET.UI.PreviewBanner"}}
+  </div>
+  {{/if}}
+
+  {{#if isCharacter}}
+  {{!-- ============ CHARACTER LAYOUT: clerk on stage, counter on the right ============ --}}
+  <section class="nm-stage">
+    {{> "modules/cpr-neon-market/templates/parts/stage.hbs"}}
+  </section>
+
+  <section class="nm-counter">
+    <header class="nm-header">
+      <div class="nm-title">
+        <h1 class="nm-shop-name" data-text="{{identity.name}}">{{identity.name}}</h1>
+        {{#if identity.subtitle}}<p class="nm-subtitle">{{identity.subtitle}}</p>{{/if}}
+      </div>
+      <div class="nm-header-tools">
+        {{#if isGM}}
+        <button type="button" class="nm-icon-btn" data-action="configure" data-tooltip="{{localize 'NEONMARKET.UI.Configure'}}" aria-label="{{localize 'NEONMARKET.UI.Configure'}}"><i class="fa-solid fa-sliders"></i></button>
+        {{/if}}
+        <button type="button" class="nm-icon-btn nm-close" data-action="close" aria-label="{{localize 'Close'}}"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </header>
+
+    <div class="nm-nav">
+      {{> "modules/cpr-neon-market/templates/parts/nav.hbs"}}
+    </div>
+
+    <div class="nm-body">
+      <div class="nm-list" role="listbox" aria-label="{{identity.name}}">
+        {{> "modules/cpr-neon-market/templates/parts/listing.hbs"}}
+      </div>
+      <aside class="nm-detail">
+        {{> "modules/cpr-neon-market/templates/parts/detail.hbs"}}
+      </aside>
+    </div>
+
+    <footer class="nm-footer">
+      {{> "modules/cpr-neon-market/templates/parts/cart.hbs"}}
+    </footer>
+  </section>
+
+  {{else}}
+  {{!-- ============ GRID LAYOUT: catalog-dense storefront ============ --}}
+  <header class="nm-banner">
+    <div class="nm-banner-clerk">
+      {{#if identity.art}}<img src="{{identity.art}}" alt="{{identity.owner}}">{{/if}}
+      <div class="nm-ticker">
+        {{#if identity.owner}}<span class="nm-ticker-name">{{identity.owner}}</span>{{/if}}
+        <span class="nm-ticker-line" data-speech>{{speech}}</span>
+      </div>
+    </div>
+    <div class="nm-title">
+      <h1 class="nm-shop-name" data-text="{{identity.name}}">{{identity.name}}</h1>
+      {{#if identity.slogan}}<p class="nm-subtitle">{{identity.slogan}}</p>{{/if}}
+    </div>
+    <div class="nm-header-tools">
+      {{#if isGM}}
+      <button type="button" class="nm-icon-btn" data-action="configure" data-tooltip="{{localize 'NEONMARKET.UI.Configure'}}" aria-label="{{localize 'NEONMARKET.UI.Configure'}}"><i class="fa-solid fa-sliders"></i></button>
+      {{/if}}
+      <button type="button" class="nm-icon-btn nm-close" data-action="close" aria-label="{{localize 'Close'}}"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </header>
+
+  <div class="nm-grid-body">
+    <nav class="nm-sidebar">
+      {{> "modules/cpr-neon-market/templates/parts/nav.hbs"}}
+    </nav>
+    <div class="nm-list" role="listbox" aria-label="{{identity.name}}">
+      {{> "modules/cpr-neon-market/templates/parts/listing.hbs"}}
+    </div>
+    <aside class="nm-side">
+      <div class="nm-detail">
+        {{> "modules/cpr-neon-market/templates/parts/detail.hbs"}}
+      </div>
+      <div class="nm-footer">
+        {{> "modules/cpr-neon-market/templates/parts/cart.hbs"}}
+      </div>
+    </aside>
+  </div>
+  {{/if}}
+</div>

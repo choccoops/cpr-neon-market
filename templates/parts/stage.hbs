@@ -1,0 +1,14 @@
+<div class="nm-clerk">
+  {{#if identity.art}}
+  <img class="nm-clerk-art" src="{{identity.art}}" alt="{{identity.owner}}">
+  {{else}}
+  <div class="nm-clerk-art nm-clerk-empty"><i class="fa-solid fa-user-secret"></i></div>
+  {{/if}}
+</div>
+<div class="nm-speech" role="status" aria-live="polite">
+  <p class="nm-speech-text" data-speech>{{speech}}</p>
+</div>
+<div class="nm-nameplate">
+  {{#if identity.owner}}<span class="nm-owner">{{identity.owner}}</span>{{/if}}
+  {{#if identity.slogan}}<span class="nm-slogan">{{identity.slogan}}</span>{{/if}}
+</div>

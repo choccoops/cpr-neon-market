@@ -1,0 +1,20 @@
+<div class="nm-modes" role="tablist">
+  {{#each modes}}
+  <button type="button" class="nm-mode {{#if active}}active{{/if}}" role="tab" aria-selected="{{active}}" data-action="setMode" data-mode="{{key}}">
+    <i class="{{icon}}"></i><span>{{label}}</span>{{#if count}}<em class="nm-count">{{count}}</em>{{/if}}
+  </button>
+  {{/each}}
+</div>
+{{#if showCategories}}
+<div class="nm-categories" role="tablist">
+  {{#each categories}}
+  <button type="button" class="nm-cat {{#if active}}active{{/if}}" role="tab" aria-selected="{{active}}" data-action="setCategory" data-category="{{id}}">
+    <span>{{name}}</span><em class="nm-count">{{count}}</em>
+  </button>
+  {{/each}}
+</div>
+{{/if}}
+<label class="nm-search">
+  <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+  <input type="search" name="search" value="{{search}}" placeholder="{{localize 'NEONMARKET.UI.Search'}}" autocomplete="off">
+</label>

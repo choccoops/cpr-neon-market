@@ -1,0 +1,19 @@
+<div class="neon-market-receipt theme-{{theme}}" style="--nm-accent:{{accent}}">
+  <header>
+    <i class="fa-solid {{#if isBuy}}fa-receipt{{else}}fa-hand-holding-dollar{{/if}}"></i>
+    <div>
+      <strong>{{shopName}}</strong>
+      <span>{{#if isBuy}}{{localize "NEONMARKET.Receipt.Bought" actor=actorName}}{{else}}{{localize "NEONMARKET.Receipt.Sold" actor=actorName}}{{/if}}</span>
+    </div>
+  </header>
+  <ul>
+    {{#each lines}}
+    <li><span>{{name}}{{#if (gt qty 1)}} &times;{{qty}}{{/if}}</span><span>{{price}}</span></li>
+    {{/each}}
+  </ul>
+  <footer>
+    <span>{{#if isBuy}}{{localize "NEONMARKET.Receipt.Paid"}}{{else}}{{localize "NEONMARKET.Receipt.Received"}}{{/if}}</span>
+    <strong>{{total}}</strong>
+  </footer>
+  <p class="nm-receipt-balance">{{localize "NEONMARKET.Receipt.Balance" actor=actorName balance=balance}}</p>
+</div>
