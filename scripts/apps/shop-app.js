@@ -567,6 +567,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const rows = cart.lines.map((l) => `<li>${Handlebars.escapeExpression(l.name)} &times; ${l.qty} &mdash; ${l.price}</li>`).join("");
     const ok = await Compat.DialogV2.confirm({
+      classes: ["neon-market-dialog"],
       window: { title: label(shop, "checkout") },
       content: `<p>${game.i18n.format("NEONMARKET.UI.ConfirmBuy", { actor: Handlebars.escapeExpression(buyer.name), total: cart.total, after: cart.after })}</p><ul class="nm-confirm-list">${rows}</ul>`,
       rejectClose: false
@@ -600,6 +601,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const payout = sellPrice(item, units, shop, this.shopActor);
 
     const ok = await Compat.DialogV2.confirm({
+      classes: ["neon-market-dialog"],
       window: { title: label(shop, "sell") },
       content: `<p>${game.i18n.format("NEONMARKET.UI.ConfirmSell", {
         actor: Handlebars.escapeExpression(buyer.name), item: Handlebars.escapeExpression(item.name), qty: units, total: formatEb(payout)

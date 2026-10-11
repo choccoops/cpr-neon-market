@@ -31,7 +31,9 @@ Then open your world and enable **Neon Market** in *Manage Modules*.
    - the sliders button in the Token HUD.
 2. **Identity:** tick *Open for business*, name the shop and clerk, pick clerk art (a tall
    transparent portrait works best) and write what the clerk says.
-3. **Look:** choose a theme. Picking one also sets its layout and colors; change them afterwards if you like.
+3. **Look:** choose a theme. New shops start on **Night City chrome**, the look of
+   [Neon Hub](https://github.com/choccoops/neonredlanding)'s calendar. Picking a theme also sets its layout and colors;
+   change them afterwards if you like.
 4. **Catalog:** drag items or item folders from the sidebar or a compendium onto a category.
    Leave *Price* blank to use the item's market price. *Stock* -1 means unlimited.
    *Copy this actor's items* turns the actor's own inventory into a category with matching stock.
@@ -152,7 +154,8 @@ renames one degrades to "no data" rather than breaking a trade. After a system u
 
 ## License
 
-MIT. Cyberpunk RED is a trademark of R. Talsorian Games; this is unofficial fan content.
+MIT. Bundles the Tektur font (SIL Open Font License, see `fonts/Tektur-OFL.txt`).
+Cyberpunk RED is a trademark of R. Talsorian Games; this is unofficial fan content.
 
 ## Updates
 

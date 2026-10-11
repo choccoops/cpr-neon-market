@@ -276,6 +276,7 @@ export class Transactions {
     const rows = lines.map((l) => `<li>${Handlebars.escapeExpression(l.name)} &times; ${l.qty} &mdash; ${formatEb(l.price)}</li>`).join("");
     const key = kind === "buy" ? "NEONMARKET.Approval.Buy" : "NEONMARKET.Approval.Sell";
     const ok = await Compat.DialogV2.confirm({
+      classes: ["neon-market-dialog"],
       window: { title: game.i18n.localize("NEONMARKET.Approval.Title") },
       content: `<p>${game.i18n.format(key, { user: user.name, actor: buyer.name, shop: shop.identity.name, total: formatEb(total) })}</p><ul>${rows}</ul>`,
       rejectClose: false

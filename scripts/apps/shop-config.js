@@ -292,6 +292,7 @@ export class ShopConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!cat) return;
     if (cat.items.length) {
       const ok = await Compat.DialogV2.confirm({
+        classes: ["neon-market-dialog"],
         window: { title: game.i18n.localize("NEONMARKET.Config.RemoveCategory") },
         content: `<p>${game.i18n.format("NEONMARKET.Config.RemoveCategoryConfirm", { name: Handlebars.escapeExpression(cat.name), n: cat.items.length })}</p>`,
         rejectClose: false
@@ -385,6 +386,7 @@ export class ShopConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #onClearBuyback() {
     const ok = await Compat.DialogV2.confirm({
+      classes: ["neon-market-dialog"],
       window: { title: game.i18n.localize("NEONMARKET.Config.ClearBuyback") },
       content: `<p>${game.i18n.localize("NEONMARKET.Config.ClearBuybackConfirm")}</p>`,
       rejectClose: false
@@ -419,6 +421,7 @@ export class ShopConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
   async close(options = {}) {
     if (this.dirty && !options.force) {
       const ok = await Compat.DialogV2.confirm({
+        classes: ["neon-market-dialog"],
         window: { title: game.i18n.localize("NEONMARKET.Config.Unsaved") },
         content: `<p>${game.i18n.localize("NEONMARKET.Config.UnsavedConfirm")}</p>`,
         rejectClose: false

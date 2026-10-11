@@ -11,10 +11,12 @@ export const LAYOUTS = {
 };
 
 /**
- * Eight themes, four per layout family. Themes are pure CSS (see styles/neon-market.css);
+ * Nine themes, each with a home layout. Themes are pure CSS (see styles/neon-market.css);
  * the key becomes a `theme-<key>` class on the shop root.
  */
 export const THEMES = {
+  /** Neon Hub's calendar look: black chrome, notched corners, Tektur. The default. */
+  chrome: { label: "NEONMARKET.Theme.Chrome", layout: "character", accent: "#ff2a6d", accent2: "#05d9e8" },
   neon: { label: "NEONMARKET.Theme.Neon", layout: "character", accent: "#ff2a6d", accent2: "#05d9e8" },
   corpo: { label: "NEONMARKET.Theme.Corpo", layout: "character", accent: "#c8a24a", accent2: "#e9edf2" },
   street: { label: "NEONMARKET.Theme.Street", layout: "character", accent: "#ffd400", accent2: "#e4322b" },
@@ -24,6 +26,9 @@ export const THEMES = {
   ripperdoc: { label: "NEONMARKET.Theme.Ripperdoc", layout: "grid", accent: "#1fb5a8", accent2: "#d9304f" },
   fixer: { label: "NEONMARKET.Theme.Fixer", layout: "grid", accent: "#f0a830", accent2: "#d8d2c4" }
 };
+
+/** Theme for new shops. Existing shops keep the theme they were saved with. */
+export const DEFAULT_THEME = "chrome";
 
 /**
  * Cyberpunk RED core price categories (CRB p.339). Used as the "rarity" display tier.

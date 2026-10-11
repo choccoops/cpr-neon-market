@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0
+
+One look with Neon Hub: the market now wears the Neon Hub calendar's chrome.
+
+- **Night City chrome theme.** Black chrome, notched panels with a neon edge, uppercase Tektur type, scanlines and a glitching shop name. It's the default for new shops; existing shops keep their theme.
+- **Calendar styling everywhere.** Every theme gets Tektur labels, buttons and prices, notched buttons and cards, and `//` kickers. The data terminal stays all-monospace.
+- **Shop editor and dialogs** get the calendar's title bar and black chrome forms, whatever the core UI theme.
+- **Chat receipts** are calendar-style cards in the shop's main color.
+- Bundles the Tektur font (SIL Open Font License).
+- With reduced motion turned on, looping effects (the glitch, the terminal cursor) now stop instead of flickering.
+
 ## 1.1.0
 
 Checked line by line against the Cyberpunk RED - CORE v0.92.4 source.

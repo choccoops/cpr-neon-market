@@ -37,7 +37,7 @@ jobs:
           [ -s RELEASE_NOTES.md ] || echo "See CHANGELOG.md" > RELEASE_NOTES.md
 
       - name: Build module.zip
-        run: zip -r module.zip module.json scripts templates styles lang README.md CHANGELOG.md LICENSE
+        run: zip -r module.zip module.json scripts templates styles fonts lang README.md CHANGELOG.md LICENSE
 
       - uses: softprops/action-gh-release@v2
         with:

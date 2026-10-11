@@ -28,7 +28,7 @@ build:
       module.json > module.tmp && mv module.tmp module.json
     - awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{if(f)exit} f' CHANGELOG.md > RELEASE_NOTES.md
     - '[ -s RELEASE_NOTES.md ] || echo "See CHANGELOG.md" > RELEASE_NOTES.md'
-    - zip -r module.zip module.json scripts templates styles lang README.md CHANGELOG.md LICENSE
+    - zip -r module.zip module.json scripts templates styles fonts lang README.md CHANGELOG.md LICENSE
   artifacts:
     paths: [module.json, module.zip, RELEASE_NOTES.md]
 

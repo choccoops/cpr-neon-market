@@ -2,7 +2,36 @@
    Neon Market: themed shops for Cyberpunk RED
    Everything is scoped under .neon-market so no core or system styles leak.
    Themes only set tokens (custom properties) plus a few signature effects.
+   The shared chrome (Tektur labels, notched buttons, "//" kickers, title bars)
+   follows Neon Hub's calendar so a hub and its shops look alike.
    ========================================================================== */
+
+@font-face {
+  font-family: "Neon Market Tektur";
+  src: url("../fonts/Tektur-Regular.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* ---------- Shared chrome tokens (shop, editor, dialogs, receipts) ---------- */
+.neon-market,
+.neon-market-dialog,
+.neon-market-receipt {
+  --nc-bg: #07070b;
+  --nc-bg-2: #0d0d15;
+  --nc-bg-3: #14141f;
+  --nc-line: #26263a;
+  --nc-line-2: #36364f;
+  --nc-text: #d8dbec;
+  --nc-dim: #6e7290;
+  --nc-pink: #ff2a6d;
+  --nc-cyan: #05d9e8;
+  --nc-yellow: #f3e600;
+  --nc-display: "Neon Market Tektur", "Signika", sans-serif;
+  --nc-notch: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  --nc-notch-sm: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  --nc-notch-card: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
 
 /* ---------- Tier palette: Cyberpunk RED price categories ---------- */
 .neon-market {
@@ -60,7 +89,9 @@
   --nm-muted: #a898c4;
   --nm-font-display: "Bruno Ace", "Signika", sans-serif;
   --nm-font-body: "Signika", "Helvetica Neue", Arial, sans-serif;
-  --nm-font-num: "Signika", sans-serif;
+  /* Labels, buttons and numbers: Tektur in every theme but the terminal. */
+  --nm-font-ui: var(--nc-display);
+  --nm-font-num: var(--nm-font-ui);
   --nm-cut: 14px;
   --nm-radius: 0px;
   --nm-glow: 0 0 18px color-mix(in srgb, var(--nm-accent) 55%, transparent);
@@ -707,6 +738,103 @@
 .neon-market .layout-grid .nm-checkout { width: 100%; }
 
 /* ==========================================================================
+   One look with Neon Hub: the calendar's chrome in every theme.
+   Letter-spaced Tektur labels, notched buttons and cards, "//" kickers.
+   Colours still come from each theme's tokens.
+   ========================================================================== */
+.neon-market .nm-subtitle,
+.neon-market .nm-slogan {
+  font-family: var(--nm-font-ui);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.neon-market .nm-subtitle::before { content: "// "; color: var(--nm-accent); }
+.neon-market .nm-slogan { font-size: 10px; letter-spacing: 0.22em; }
+
+.neon-market .nm-banner-closed,
+.neon-market .nm-mode,
+.neon-market .nm-cat,
+.neon-market .nm-cta,
+.neon-market .nm-ticker-name,
+.neon-market .nm-cart-head,
+.neon-market .nm-cart-total > span,
+.neon-market .nm-detail-empty p,
+.neon-market .nm-empty {
+  font-family: var(--nm-font-ui);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.neon-market .nm-mode,
+.neon-market .nm-cat { font-size: 12px; }
+.neon-market .nm-mode,
+.neon-market .nm-cat,
+.neon-market .nm-cta,
+.neon-market .nm-banner-closed { clip-path: var(--nc-notch); }
+.neon-market .nm-icon-btn,
+.neon-market .nm-qty button { clip-path: var(--nc-notch-sm); }
+.neon-market .nm-cart-head,
+.neon-market .nm-cart-total > span,
+.neon-market .nm-detail-empty p,
+.neon-market .nm-empty { font-size: 11px; letter-spacing: 0.24em; }
+.neon-market .nm-ticker-name { font-size: 11px; letter-spacing: 0.22em; }
+.neon-market .nm-count { font-family: var(--nm-font-ui); letter-spacing: 0.06em; }
+
+.neon-market .nm-cta {
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.neon-market .nm-search input { min-width: 0; width: 100%; font-family: var(--nm-font-ui); font-size: 13px; letter-spacing: 0.1em; }
+.neon-market .nm-search:focus-within { border-bottom-color: var(--nm-accent-2); color: var(--nm-accent-2); }
+
+.neon-market .nm-item-meta,
+.neon-market .nm-item-side,
+.neon-market .nm-detail-type,
+.neon-market .nm-balance,
+.neon-market .nm-funds,
+.neon-market .nm-cart-after {
+  font-family: var(--nm-font-ui);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.neon-market .nm-tier { font-size: inherit; }
+.neon-market .nm-discount { letter-spacing: 0.06em; }
+
+.neon-market .nm-price,
+.neon-market .nm-list-price,
+.neon-market .nm-line-total,
+.neon-market .nm-cart-total strong,
+.neon-market .nm-qty output,
+.neon-market .nm-stats dd,
+.neon-market .nm-cart-price,
+.neon-market .nm-balance strong,
+.neon-market .nm-funds strong {
+  font-family: var(--nm-font-num);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.neon-market .nm-price small { font-family: var(--nm-font-ui); letter-spacing: 0.08em; }
+
+.neon-market .nm-detail-name { text-transform: uppercase; letter-spacing: 0.06em; }
+.neon-market .nm-stats { clip-path: var(--nc-notch-card); }
+.neon-market .nm-stats dt {
+  font-family: var(--nm-font-ui);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.neon-market .nm-owner { text-transform: uppercase; letter-spacing: 0.08em; }
+.neon-market .nm-buyer select { font-family: var(--nm-font-ui); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.neon-market .layout-character .nm-detail,
+.neon-market .layout-grid .nm-item { clip-path: var(--nc-notch-card); }
+.neon-market .layout-character .nm-nameplate { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%); }
+
+/* ==========================================================================
    Motion
    ========================================================================== */
 @keyframes nm-shell-in { from { opacity: 0; } to { opacity: 1; } }
@@ -741,11 +869,134 @@
     animation-delay: 0ms !important;
     transition-duration: 1ms !important;
   }
+  /* Looping effects stop outright rather than flicker at 1ms. */
+  .neon-market .theme-chrome .nm-shop-name::before,
+  .neon-market .theme-chrome .nm-shop-name::after,
+  .neon-market .theme-terminal .nm-shop-name::after { animation: none !important; }
 }
 
 /* ==========================================================================
    THEMES — character family
    ========================================================================== */
+
+/* Night City chrome: the default. Neon Hub's calendar as a shop: black chrome,
+   notched panels with a neon edge, uppercase Tektur, scanlines, a glitching name. */
+.neon-market .theme-chrome {
+  --nm-bg: var(--nc-bg);
+  --nm-bg-2: var(--nc-bg-2);
+  --nm-panel: rgba(13, 13, 21, 0.92);
+  --nm-panel-2: rgba(20, 20, 31, 0.9);
+  --nm-line: var(--nc-line);
+  --nm-text: var(--nc-text);
+  --nm-muted: var(--nc-dim);
+  --nm-font-display: var(--nc-display);
+  --nm-cut: 18px;
+}
+.neon-market .theme-chrome .nm-backdrop {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--nm-bg) 60%, transparent), var(--nm-bg) 92%),
+    var(--nm-bg-image) center / cover no-repeat,
+    radial-gradient(ellipse at 85% -10%, color-mix(in srgb, var(--nm-accent) 14%, transparent), transparent 60%),
+    radial-gradient(ellipse at 5% 110%, color-mix(in srgb, var(--nm-accent-2) 9%, transparent), transparent 55%),
+    var(--nm-bg);
+}
+.neon-market .theme-chrome .nm-fx {
+  background: repeating-linear-gradient(0deg, color-mix(in srgb, var(--nm-accent-2) 3%, transparent) 0 1px, transparent 1px 3px);
+}
+
+/* Panels: the calendar's date readout, with a neon edge along the cut corner. */
+.neon-market .theme-chrome .nm-counter,
+.neon-market .theme-chrome .nm-sidebar,
+.neon-market .theme-chrome .nm-side > * {
+  position: relative;
+  border-color: color-mix(in srgb, var(--nm-accent) 40%, var(--nm-line)) !important;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--nm-accent) 8%, transparent), transparent 45%), var(--nm-panel);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--nm-accent) 10%, transparent);
+}
+.neon-market .theme-chrome .nm-counter::after,
+.neon-market .theme-chrome .nm-sidebar::after,
+.neon-market .theme-chrome .nm-side > *::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(225deg, transparent 0 12px, var(--nm-accent) 12px 15px, transparent 15px);
+  pointer-events: none;
+}
+
+/* Shop name: white, glowing, with the calendar's split-glitch. */
+.neon-market .theme-chrome .nm-shop-name {
+  position: relative;
+  font-size: clamp(26px, 3vw, 44px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: -2px 0 color-mix(in srgb, var(--nm-accent-2) 35%, transparent), 0 0 16px color-mix(in srgb, var(--nm-accent) 70%, transparent);
+}
+.neon-market .theme-chrome .nm-shop-name::before,
+.neon-market .theme-chrome .nm-shop-name::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  text-shadow: none;
+}
+.neon-market .theme-chrome .nm-shop-name::before { color: var(--nm-accent-2); opacity: 0.55; clip-path: inset(0 0 58% 0); animation: nm-split 5.5s infinite steps(1); }
+.neon-market .theme-chrome .nm-shop-name::after { color: #fff; opacity: 0.35; clip-path: inset(62% 0 0 0); animation: nm-split-2 7s infinite steps(1); }
+@keyframes nm-split { 0%, 92%, 100% { transform: none; } 93% { transform: translate(-4px, 0); } 95% { transform: translate(3px, -1px); } 97% { transform: translate(-2px, 1px); } }
+@keyframes nm-split-2 { 0%, 88%, 100% { transform: none; } 89% { transform: translate(5px, 0); } 91% { transform: translate(-3px, 0); } }
+
+/* Navigation: calendar buttons and calendar-list picks. */
+.neon-market .theme-chrome .nm-mode,
+.neon-market .theme-chrome .nm-cat { border-color: var(--nc-line-2) !important; background: var(--nc-bg-3); color: var(--nm-text); }
+.neon-market .theme-chrome .nm-mode:hover,
+.neon-market .theme-chrome .nm-cat:hover { border-color: var(--nm-accent-2) !important; color: var(--nm-accent-2); background: color-mix(in srgb, var(--nm-accent-2) 8%, transparent); }
+.neon-market .theme-chrome .nm-mode.active { background: var(--nm-accent); border-color: var(--nm-accent) !important; color: #0b0006; }
+.neon-market .theme-chrome .nm-cat.active {
+  border-color: var(--nm-accent) !important;
+  color: #fff;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--nm-accent) 24%, transparent), var(--nc-bg-2) 85%);
+  box-shadow: inset 3px 0 0 var(--nm-accent);
+}
+
+/* Items */
+.neon-market .theme-chrome .nm-item-name { font-family: var(--nm-font-ui); font-size: 13px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; }
+.neon-market .theme-chrome .nm-item:hover { background: color-mix(in srgb, var(--nm-accent-2) 7%, transparent); }
+.neon-market .theme-chrome .nm-item:hover .nm-item-name { color: var(--nm-accent-2); }
+.neon-market .theme-chrome .nm-item.focused {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--nm-accent) 26%, transparent), color-mix(in srgb, var(--nm-accent) 6%, transparent) 85%);
+  box-shadow: inset 0 0 0 1px var(--nm-accent), inset 0 0 18px color-mix(in srgb, var(--nm-accent) 30%, transparent);
+}
+.neon-market .theme-chrome .nm-item.focused .nm-item-name { color: #fff; }
+.neon-market .theme-chrome.layout-grid .nm-item { background: rgba(13, 13, 21, 0.85); }
+.neon-market .theme-chrome .nm-item-img { background: var(--nc-bg-2); }
+
+/* Detail, cart and buttons */
+.neon-market .theme-chrome .nm-detail-name { color: #fff; letter-spacing: 0.1em; text-shadow: 0 0 14px color-mix(in srgb, var(--nm-accent) 60%, transparent); }
+.neon-market .theme-chrome .nm-stats { border-color: var(--nc-line); }
+.neon-market .theme-chrome .nm-stats > div { background: var(--nc-bg-2); }
+.neon-market .theme-chrome .nm-stats dd { color: #fff; }
+.neon-market .theme-chrome .nm-cart-head,
+.neon-market .theme-chrome .nm-cart-total > span,
+.neon-market .theme-chrome .nm-ticker-name { color: var(--nc-yellow); }
+.neon-market .theme-chrome .nm-cart-total strong,
+.neon-market .theme-chrome .nm-line-total { color: #fff; text-shadow: 0 0 10px color-mix(in srgb, var(--nm-accent) 55%, transparent); }
+.neon-market .theme-chrome .nm-cta { color: #0b0006 !important; }
+.neon-market .theme-chrome .nm-cta:not(:disabled):hover { background: var(--nc-yellow) !important; color: #0b0b00 !important; filter: none; box-shadow: none; }
+.neon-market .theme-chrome .nm-icon-btn,
+.neon-market .theme-chrome .nm-qty button { border-color: var(--nc-line-2) !important; background: var(--nc-bg-2); color: var(--nm-muted); }
+.neon-market .theme-chrome .nm-icon-btn:hover,
+.neon-market .theme-chrome .nm-qty button:not(:disabled):hover { border-color: var(--nm-accent-2) !important; background: color-mix(in srgb, var(--nm-accent-2) 8%, transparent); color: var(--nm-accent-2); }
+.neon-market .theme-chrome .nm-buyer select option { background: var(--nc-bg-2); color: var(--nc-text); }
+
+/* Clerk */
+.neon-market .theme-chrome .nm-speech { border-left-color: var(--nm-accent) !important; }
+.neon-market .theme-chrome .nm-nameplate { color: #0b0006; }
+.neon-market .theme-chrome .nm-owner { font-size: 18px; letter-spacing: 0.12em; }
+.neon-market .theme-chrome .nm-clerk-art { filter: drop-shadow(0 0 26px color-mix(in srgb, var(--nm-accent) 35%, transparent)); }
+.neon-market .theme-chrome .nm-banner-clerk img { border-color: var(--nm-accent); clip-path: var(--nc-notch); }
 
 /* Neon broker: the default. Signature: chromatic split on the shop name. */
 .neon-market .theme-neon .nm-shop-name {
@@ -843,6 +1094,7 @@
   --nm-muted: #4fbf7a;
   --nm-font-display: "Courier New", "Fira Mono", monospace;
   --nm-font-body: "Courier New", "Fira Mono", monospace;
+  --nm-font-ui: "Courier New", "Fira Mono", monospace;
   --nm-font-num: "Courier New", monospace;
   --nm-cut: 0px;
 }
@@ -1073,23 +1325,178 @@
 .neon-market .nm-config-dirty.visible { visibility: visible; }
 .neon-market .nm-config-dirty i { font-size: 7px; vertical-align: middle; }
 
+/* ---------- Editor and dialogs: the calendar's window chrome ---------- */
+.neon-market.nm-config.application,
+.neon-market-dialog.application {
+  background: var(--nc-bg);
+  color: var(--nc-text);
+  border: 1px solid var(--nc-line-2);
+  border-radius: 0;
+  box-shadow: 0 0 0 1px #000, 0 0 30px rgba(255, 42, 109, 0.16), 0 14px 42px rgba(0, 0, 0, 0.7);
+}
+.neon-market.nm-config > .window-header,
+.neon-market-dialog > .window-header {
+  background: linear-gradient(90deg, #1a0712, #0d0d16 55%, #061419);
+  border-bottom: 1px solid var(--nc-pink);
+  color: var(--nc-text);
+  font-family: var(--nc-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.neon-market.nm-config > .window-header .window-icon,
+.neon-market-dialog > .window-header .window-icon { color: var(--nc-pink); }
+.neon-market.nm-config > .window-header button,
+.neon-market-dialog > .window-header button { color: var(--nc-dim); }
+.neon-market.nm-config > .window-header button:hover,
+.neon-market-dialog > .window-header button:hover { color: var(--nc-cyan); text-shadow: 0 0 8px var(--nc-cyan); }
+
+.neon-market.nm-config .window-content { background: var(--nc-bg); color: var(--nc-text); }
+.neon-market .nm-config-root {
+  font-family: "Signika", sans-serif;
+  background: repeating-linear-gradient(0deg, rgba(5, 217, 232, 0.02) 0 1px, transparent 1px 3px), var(--nc-bg);
+}
+.neon-market .nm-config-tabs { background: rgba(13, 13, 21, 0.96); border-bottom-color: var(--nc-line); }
+.neon-market .nm-config-tabs button {
+  color: var(--nc-dim);
+  font-family: var(--nc-display);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.neon-market .nm-config-tabs button:hover { color: var(--nc-cyan); }
+.neon-market .nm-config-tabs button.active { color: #fff; border-bottom-color: var(--nc-pink); font-weight: 400; text-shadow: 0 0 10px rgba(255, 42, 109, 0.5); }
+.neon-market .nm-config-section h3 {
+  justify-content: flex-start;
+  font-family: var(--nc-display);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nc-yellow);
+  border-bottom-color: var(--nc-line);
+}
+.neon-market .nm-config-section h3::before { content: "// "; white-space: pre; color: var(--nc-pink); }
+.neon-market .nm-config-section h3 > button { margin-left: auto; }
+/* CPR forces form label colours with !important */
+.neon-market .nm-config-root .form-group.stacked > label {
+  font-family: var(--nc-display);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--nc-dim) !important;
+}
+.neon-market .nm-config-root .nm-toggle { font-family: var(--nc-display); font-size: 12px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--nc-text) !important; }
+.neon-market .nm-config-root .hint { color: var(--nc-dim); opacity: 1; }
+.neon-market .nm-config-root :is(input[type="text"], input[type="number"], input:not([type]), select, textarea) {
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--nc-line-2);
+  border-radius: 0;
+  background: var(--nc-bg-2);
+  color: var(--nc-text);
+  font-family: "Signika", sans-serif;
+  font-size: 13px;
+  box-shadow: none;
+}
+.neon-market .nm-config-root .nm-items-table :is(input, select) { height: 26px; padding: 0 6px; }
+.neon-market .nm-config-root :is(input, select, textarea):focus { outline: none; border-color: var(--nc-cyan); box-shadow: 0 0 0 1px var(--nc-cyan), 0 0 10px rgba(5, 217, 232, 0.25); }
+.neon-market .nm-config-root :is(select option, select optgroup) { background: var(--nc-bg-2); color: var(--nc-text); }
+.neon-market .nm-config-root input[type="checkbox"] { accent-color: var(--nc-pink); }
+.neon-market .nm-config-root input[type="range"] { accent-color: var(--nc-cyan); }
+.neon-market .nm-config-root input[type="color"] { height: 30px; padding: 2px; border: 1px solid var(--nc-line-2); border-radius: 0; background: var(--nc-bg-2); }
+.neon-market .nm-config-root :is(.nm-config-buttons button, .nm-file button, .nm-cat-card > header button, .nm-row-tools button, .nm-config-footer button) {
+  border: 1px solid var(--nc-line-2);
+  border-radius: 0;
+  background: var(--nc-bg-3);
+  color: var(--nc-text);
+  font-family: var(--nc-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: none;
+  clip-path: var(--nc-notch-sm);
+}
+.neon-market .nm-config-root :is(.nm-config-buttons button, .nm-file button, .nm-cat-card > header button, .nm-row-tools button, .nm-config-footer button):hover:not(:disabled) {
+  border-color: var(--nc-cyan);
+  color: var(--nc-cyan);
+  background: rgba(5, 217, 232, 0.08);
+}
+.neon-market .nm-config-root .nm-config-footer button { height: 32px; clip-path: var(--nc-notch); }
+.neon-market .nm-config-root .nm-config-footer .nm-primary { background: var(--nc-pink); border-color: var(--nc-pink); color: #0b0006; }
+.neon-market .nm-config-root .nm-config-footer .nm-primary:hover:not(:disabled) { background: var(--nc-yellow); border-color: var(--nc-yellow); color: #0b0b00; }
+.neon-market .nm-config-root .nm-link { color: var(--nc-cyan); font-family: "Signika", sans-serif; font-size: 12px; letter-spacing: normal; text-transform: none; }
+.neon-market .nm-config-root .nm-link:hover { color: #fff; text-shadow: 0 0 8px var(--nc-cyan); }
+.neon-market .nm-config-footer { background: rgba(13, 13, 21, 0.96); border-top-color: var(--nc-line); }
+.neon-market .nm-config-dirty { color: #ff8a1f; }
+.neon-market .nm-file img { clip-path: var(--nc-notch-sm); }
+
+.neon-market .nm-cat-card {
+  position: relative;
+  padding: 8px 10px 10px 14px;
+  border-color: var(--nc-line);
+  border-radius: 0;
+  background: rgba(13, 13, 21, 0.9);
+  clip-path: var(--nc-notch-card);
+}
+.neon-market .nm-cat-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--nc-pink); box-shadow: 0 0 8px var(--nc-pink); }
+.neon-market .nm-cat-card > header .nm-cat-name { font-family: var(--nc-display); font-weight: 400; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; }
+.neon-market .nm-cat-count { font-family: var(--nc-display); font-size: 11px; letter-spacing: 0.1em; color: var(--nc-dim); opacity: 1; }
+.neon-market .nm-items-table th { font-family: var(--nc-display); font-size: 10px; font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase; color: var(--nc-dim); opacity: 1; border-bottom: 1px solid var(--nc-line); }
+.neon-market .nm-items-table td { border-bottom: 1px solid rgba(38, 38, 58, 0.6); }
+.neon-market .nm-items-table .nm-final { font-family: var(--nc-display); font-weight: 400; letter-spacing: 0.04em; color: var(--nc-cyan); }
+.neon-market .nm-config-root .nm-upgraded { color: var(--nc-cyan); }
+.neon-market .nm-drop { border-color: var(--nc-line-2); border-radius: 0; color: var(--nc-dim); opacity: 1; }
+.neon-market .nm-drop-big { font-family: var(--nc-display); letter-spacing: 0.16em; text-transform: uppercase; }
+.neon-market .nm-drop.drag-over { border-color: var(--nc-pink); color: var(--nc-text); }
+
+/* Confirmation dialogs */
+.neon-market-dialog .window-content { background: var(--nc-bg); color: var(--nc-text); }
+.neon-market-dialog .window-content p strong,
+.neon-market-dialog .window-content p b { font-weight: 400; color: var(--nc-yellow); }
+.neon-market-dialog .window-content ul { margin: 6px 0 0; padding: 6px 8px 6px 22px; border-left: 3px solid var(--nc-cyan); background: var(--nc-bg-2); }
+.neon-market-dialog .window-content :is(.form-footer, .dialog-buttons) button {
+  height: 34px;
+  border: 1px solid var(--nc-line-2);
+  border-radius: 0;
+  background: var(--nc-bg-3);
+  color: var(--nc-text);
+  font-family: var(--nc-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: none;
+  clip-path: var(--nc-notch);
+}
+.neon-market-dialog .window-content :is(.form-footer, .dialog-buttons) button:hover { border-color: var(--nc-cyan); color: var(--nc-cyan); background: rgba(5, 217, 232, 0.08); }
+.neon-market-dialog .window-content :is(.form-footer, .dialog-buttons) button[data-action="yes"] { background: var(--nc-pink); border-color: var(--nc-pink); color: #0b0006; }
+.neon-market-dialog .window-content :is(.form-footer, .dialog-buttons) button[data-action="yes"]:hover { background: var(--nc-yellow); border-color: var(--nc-yellow); color: #0b0b00; }
+
 /* ==========================================================================
    Chat receipt
    ========================================================================== */
+/* The calendar's chat card, in the shop's main color. */
 .neon-market-receipt {
   --nm-accent: #ff2a6d;
-  border-left: 3px solid var(--nm-accent);
-  padding: 6px 8px 6px 10px;
+  position: relative;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--nm-accent);
+  background: linear-gradient(115deg, color-mix(in srgb, var(--nm-accent) 18%, transparent), transparent 70%), #09090e;
+  color: var(--nc-text);
   font-size: 13px;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
 }
 .neon-market-receipt header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.neon-market-receipt header i { color: var(--nm-accent); font-size: 16px; }
-.neon-market-receipt header div { display: grid; line-height: 1.2; }
-.neon-market-receipt header span { font-size: 12px; opacity: 0.75; }
-.neon-market-receipt ul { list-style: none; margin: 0; padding: 0; }
+.neon-market-receipt header i { color: var(--nm-accent); font-size: 16px; text-shadow: 0 0 8px color-mix(in srgb, var(--nm-accent) 60%, transparent); }
+.neon-market-receipt header div { display: grid; line-height: 1.2; min-width: 0; }
+.neon-market-receipt header strong { font-family: var(--nc-display); font-size: 15px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
+.neon-market-receipt header span { font-family: var(--nc-display); font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--nm-accent); }
+.neon-market-receipt header span::before { content: "// "; }
+.neon-market-receipt ul { list-style: none; margin: 0; padding: 4px 0; border-top: 1px solid var(--nc-line); }
 .neon-market-receipt li,
 .neon-market-receipt footer { display: flex; justify-content: space-between; gap: 8px; }
-.neon-market-receipt li span:last-child,
-.neon-market-receipt footer strong { font-variant-numeric: tabular-nums; }
-.neon-market-receipt footer { margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(0, 0, 0, 0.2); }
-.neon-market-receipt .nm-receipt-balance { margin: 4px 0 0; font-size: 12px; opacity: 0.75; }
+.neon-market-receipt li { padding: 1px 0; }
+.neon-market-receipt li span:last-child { font-family: var(--nc-display); letter-spacing: 0.04em; color: var(--nc-cyan); white-space: nowrap; }
+.neon-market-receipt footer { align-items: baseline; margin-top: 2px; padding-top: 5px; border-top: 1px solid var(--nc-line); }
+.neon-market-receipt footer span { font-family: var(--nc-display); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--nc-yellow); }
+.neon-market-receipt footer strong { font-family: var(--nc-display); font-size: 20px; font-weight: 400; letter-spacing: 0.04em; color: #fff; text-shadow: 0 0 10px color-mix(in srgb, var(--nm-accent) 60%, transparent); }
+.neon-market-receipt .nm-receipt-balance { margin: 4px 0 0; font-size: 12px; color: var(--nc-dim); }

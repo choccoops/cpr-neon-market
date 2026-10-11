@@ -1,4 +1,4 @@
-import { MODULE_ID, FLAG_KEY, THEMES, PRICE_TIERS, LABEL_KEYS, SPEECH_KEYS, SFX_SLOTS } from "./constants.js";
+import { MODULE_ID, FLAG_KEY, THEMES, DEFAULT_THEME, PRICE_TIERS, LABEL_KEYS, SPEECH_KEYS, SFX_SLOTS } from "./constants.js";
 import { CPR } from "./cpr-adapter.js";
 
 const { mergeObject, deepClone, getProperty } = foundry.utils;
@@ -11,12 +11,12 @@ export function newId() {
 
 /** A complete shop configuration with every field present. */
 export function defaultShop(actor) {
-  const theme = THEMES.neon;
+  const theme = THEMES[DEFAULT_THEME];
   return {
     schema: SCHEMA_VERSION,
     enabled: false,
     layout: "character",
-    theme: "neon",
+    theme: DEFAULT_THEME,
     identity: {
       name: actor?.name ?? game.i18n.localize("NEONMARKET.Default.ShopName"),
       subtitle: game.i18n.localize("NEONMARKET.Default.Subtitle"),
@@ -51,7 +51,7 @@ export function defaultShop(actor) {
 /** Fill any missing fields from defaults and coerce types, so templates never see holes. */
 export function normalizeShop(raw, actor) {
   const shop = mergeObject(defaultShop(actor), deepClone(raw ?? {}), { inplace: false, insertKeys: true });
-  if (!THEMES[shop.theme]) shop.theme = "neon";
+  if (!THEMES[shop.theme]) shop.theme = DEFAULT_THEME;
   if (!["character", "grid"].includes(shop.layout)) shop.layout = THEMES[shop.theme].layout;
   shop.categories = Array.isArray(shop.categories) ? shop.categories : [];
   for (const cat of shop.categories) {
