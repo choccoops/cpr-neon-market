@@ -10,6 +10,21 @@
 
 const ns = (path) => foundry.utils.getProperty(globalThis, path);
 
+/**
+ * Foundry v12 globals, by name. v12 declares its classes with top-level `class`
+ * statements: global names a script can use, but not properties of globalThis, so
+ * `globalThis.FilePicker` is undefined there. Each is read as a bare identifier
+ * instead (which also picks up hosts that swap one out, like The Forge's FilePicker).
+ */
+const V12 = {
+  FilePicker: () => (typeof FilePicker === "undefined" ? undefined : FilePicker),
+  TextEditor: () => (typeof TextEditor === "undefined" ? undefined : TextEditor),
+  AudioHelper: () => (typeof AudioHelper === "undefined" ? undefined : AudioHelper),
+  renderTemplate: () => (typeof renderTemplate === "undefined" ? undefined : renderTemplate),
+  loadTemplates: () => (typeof loadTemplates === "undefined" ? undefined : loadTemplates)
+};
+const v12 = (name) => globalThis[name] ?? V12[name]();
+
 export const Compat = {
   get generation() {
     return Number(game.release?.generation ?? 12);
@@ -28,24 +43,24 @@ export const Compat = {
   },
 
   get FilePicker() {
-    return ns("foundry.applications.apps.FilePicker.implementation") ?? globalThis.FilePicker;
+    return ns("foundry.applications.apps.FilePicker.implementation") ?? v12("FilePicker");
   },
 
   get TextEditor() {
-    return ns("foundry.applications.ux.TextEditor.implementation") ?? globalThis.TextEditor;
+    return ns("foundry.applications.ux.TextEditor.implementation") ?? v12("TextEditor");
   },
 
   get AudioHelper() {
-    return ns("foundry.audio.AudioHelper") ?? globalThis.AudioHelper;
+    return ns("foundry.audio.AudioHelper") ?? v12("AudioHelper");
   },
 
   renderTemplate(path, data) {
-    const fn = ns("foundry.applications.handlebars.renderTemplate") ?? globalThis.renderTemplate;
+    const fn = ns("foundry.applications.handlebars.renderTemplate") ?? v12("renderTemplate");
     return fn(path, data);
   },
 
   loadTemplates(paths) {
-    const fn = ns("foundry.applications.handlebars.loadTemplates") ?? globalThis.loadTemplates;
+    const fn = ns("foundry.applications.handlebars.loadTemplates") ?? v12("loadTemplates");
     return fn(paths);
   },
 

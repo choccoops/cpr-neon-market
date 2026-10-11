@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+- **Fixed: browse buttons in the shop editor did nothing on Foundry v12.** Neon Market looked up v12's FilePicker and TextEditor in a way that only works in v13 (the same fix as Neon Hub 1.3.1). This also fixes dragging items into a catalog and showing item descriptions in the shop, and works with The Forge's file picker.
+
 ## 1.2.2
 
 - Fixed: shops wouldn't open at all ("setting getter-only property state"). The shop window kept its data in a property name Foundry reserves for every window.
