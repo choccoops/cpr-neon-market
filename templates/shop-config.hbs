@@ -1,7 +1,7 @@
 <div class="nm-config-root">
   <nav class="nm-config-tabs" role="tablist">
     {{#each tabs}}
-    <button type="button" role="tab" class="{{#if active}}active{{/if}}" aria-selected="{{active}}" data-action="tab" data-tab="{{key}}">{{label}}</button>
+    <button type="button" role="tab" class="{{#if active}}active{{/if}}" aria-selected="{{active}}" data-action="switchTab" data-tab="{{key}}">{{label}}</button>
     {{/each}}
   </nav>
 

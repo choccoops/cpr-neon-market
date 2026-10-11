@@ -37,7 +37,7 @@ export class ShopConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     position: { width: 900, height: 760 },
     actions: {
-      tab: ShopConfigApp.#onTab,
+      switchTab: ShopConfigApp.#onSwitchTab,
       addCategory: ShopConfigApp.#onAddCategory,
       removeCategory: ShopConfigApp.#onRemoveCategory,
       moveCategory: ShopConfigApp.#onMoveCategory,
@@ -272,7 +272,7 @@ export class ShopConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /*  Actions                                 */
   /* ---------------------------------------- */
 
-  static #onTab(event, target) {
+  static #onSwitchTab(event, target) {
     this.activeTab = target.dataset.tab;
     this.render();
   }

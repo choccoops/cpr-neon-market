@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+- Fixed: shops wouldn't open at all ("setting getter-only property state"). The shop window kept its data in a property name Foundry reserves for every window.
+- Fixed: the shop editor's tabs didn't switch ("You must pass both the tab and tab group identifier"). The tab buttons used an action name Foundry handles itself.
+
 ## 1.2.1
 
 - Fixed: "Left after paying" showed its amount in capitals ("950EB").

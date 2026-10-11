@@ -22,7 +22,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.shopActor = shopActor;
     this.preview = preview;
     this.draft = draft;
-    this.state = {
+    this.shopState = {
       mode: "buy",
       category: "all",
       focus: null,
@@ -87,7 +87,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Re-render any open shop affected by a change to this actor (shop or buyer). */
   static refreshFor(actor) {
     for (const app of this.instances.values()) {
-      if (app.shopActor.uuid === actor.uuid || app.state.buyerUuid === actor.uuid) app.render();
+      if (app.shopActor.uuid === actor.uuid || app.shopState.buyerUuid === actor.uuid) app.render();
     }
   }
 
@@ -96,7 +96,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   get buyer() {
-    return this.state.buyerUuid ? fromUuidSync(this.state.buyerUuid) : null;
+    return this.shopState.buyerUuid ? fromUuidSync(this.shopState.buyerUuid) : null;
   }
 
   setDraft(draft) {
@@ -113,7 +113,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const buyer = this.buyer;
     const wealth = buyer ? CPR.getWealth(buyer) : 0;
     const L = (k) => label(shop, k);
-    const s = this.state;
+    const s = this.shopState;
     const allowSell = shop.trade.allowSell && game.settings.get(MODULE_ID, "playersCanSell");
     const allowBuyback = shop.trade.buyback && shop.buyback.length > 0;
 
@@ -176,12 +176,12 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   #matchesSearch(name) {
-    const q = this.state.search.trim().toLowerCase();
+    const q = this.shopState.search.trim().toLowerCase();
     return !q || name.toLowerCase().includes(q);
   }
 
   #buildListings(shop, buyer, wealth, cart) {
-    const s = this.state;
+    const s = this.shopState;
     const out = [];
 
     if (s.mode === "buy") {
@@ -276,7 +276,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   #buildCart(shop, wealth) {
     const lines = [];
     let total = 0;
-    this.state.cart = this.state.cart.filter((row) => {
+    this.shopState.cart = this.shopState.cart.filter((row) => {
       if (row.source === "buyback") {
         const b = shop.buyback.find((x) => x.id === row.entryId);
         if (!b) return false;
@@ -301,12 +301,12 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       totalValue: total,
       after: formatEb(wealth - total),
       overBudget: total > wealth,
-      canCheckout: !!buyer && lines.length > 0 && total <= wealth && !this.state.busy
+      canCheckout: !!buyer && lines.length > 0 && total <= wealth && !this.shopState.busy
     };
   }
 
   async #buildFocus(shop, buyer, listings, cart) {
-    const s = this.state;
+    const s = this.shopState;
     if (!s.focus) return null;
     const listing = listings.find((l) => l.key === s.focus.key);
     if (!listing) {
@@ -363,14 +363,14 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       stepLabel,
       lineTotal: formatEb(lineValue),
       soldOut: maxQty <= 0,
-      canAdd: listing.source !== "sell" && maxQty > 0 && !this.state.busy,
-      canSell: listing.source === "sell" && maxQty > 0 && !this.state.busy
+      canAdd: listing.source !== "sell" && maxQty > 0 && !this.shopState.busy,
+      canSell: listing.source === "sell" && maxQty > 0 && !this.shopState.busy
     };
   }
 
   #emptyText(shop) {
-    if (this.state.search) return game.i18n.localize("NEONMARKET.UI.NoMatches");
-    if (this.state.mode === "sell") {
+    if (this.shopState.search) return game.i18n.localize("NEONMARKET.UI.NoMatches");
+    if (this.shopState.mode === "sell") {
       return this.buyer ? game.i18n.localize("NEONMARKET.UI.NothingToSell") : game.i18n.localize("NEONMARKET.UI.PickBuyer");
     }
     if (!shop.categories.length) return game.i18n.localize("NEONMARKET.UI.EmptyShop");
@@ -403,16 +403,16 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     root.querySelector("select[name=buyer]")?.addEventListener("change", (ev) => {
-      this.state.buyerUuid = ev.currentTarget.value || null;
-      this.state.cart = [];
-      this.state.focus = null;
+      this.shopState.buyerUuid = ev.currentTarget.value || null;
+      this.shopState.cart = [];
+      this.shopState.focus = null;
       this.render();
     });
 
     const search = root.querySelector("input[name=search]");
     if (search) {
       search.addEventListener("input", foundry.utils.debounce((ev) => {
-        this.state.search = ev.target.value;
+        this.shopState.search = ev.target.value;
         this._restoreSearchFocus = true;
         this.render();
       }, 200));
@@ -458,7 +458,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   say(key) {
-    this.state.speechKey = key;
+    this.shopState.speechKey = key;
   }
 
   sfx(slot) {
@@ -486,29 +486,29 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onSetMode(event, target) {
     const mode = target.dataset.mode;
-    if (mode === this.state.mode) return;
-    this.state.mode = mode;
-    this.state.focus = null;
-    this.state.qty = 1;
+    if (mode === this.shopState.mode) return;
+    this.shopState.mode = mode;
+    this.shopState.focus = null;
+    this.shopState.qty = 1;
     this.sfx("page");
     this.render();
   }
 
   static #onSetCategory(event, target) {
     const id = target.dataset.category;
-    if (id === this.state.category) return;
-    this.state.category = id;
-    this.state.focus = null;
-    this.state.qty = 1;
+    if (id === this.shopState.category) return;
+    this.shopState.category = id;
+    this.shopState.focus = null;
+    this.shopState.qty = 1;
     this.sfx("page");
     this.render();
   }
 
   static #onFocus(event, target) {
     const key = target.dataset.key;
-    if (this.state.focus?.key === key) return;
-    this.state.focus = { key };
-    this.state.qty = 1;
+    if (this.shopState.focus?.key === key) return;
+    this.shopState.focus = { key };
+    this.shopState.qty = 1;
     this.say("select");
     this.sfx("select");
     this.render();
@@ -516,35 +516,35 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onQtyUp(event, target) {
     const max = Number(target.dataset.max) || 1;
-    this.state.qty = Math.min(max, this.state.qty + (event.shiftKey ? 10 : 1));
+    this.shopState.qty = Math.min(max, this.shopState.qty + (event.shiftKey ? 10 : 1));
     this.render();
   }
 
   static #onQtyDown(event) {
-    this.state.qty = Math.max(1, this.state.qty - (event.shiftKey ? 10 : 1));
+    this.shopState.qty = Math.max(1, this.shopState.qty - (event.shiftKey ? 10 : 1));
     this.render();
   }
 
   static #onAddToCart() {
-    const key = this.state.focus?.key;
+    const key = this.shopState.focus?.key;
     if (!key) return;
     const [source, a, b] = key.split(":");
-    const cart = this.state.cart;
+    const cart = this.shopState.cart;
     if (source === "buyback") {
       if (!cart.some((r) => r.source === "buyback" && r.entryId === a)) cart.push({ source, entryId: a, qty: 1 });
     } else {
       const row = cart.find((r) => r.source === "catalog" && r.categoryId === a && r.entryId === b);
-      if (row) row.qty = Math.min(LIMITS.maxQty, row.qty + this.state.qty);
-      else cart.push({ source: "catalog", categoryId: a, entryId: b, qty: this.state.qty });
+      if (row) row.qty = Math.min(LIMITS.maxQty, row.qty + this.shopState.qty);
+      else cart.push({ source: "catalog", categoryId: a, entryId: b, qty: this.shopState.qty });
     }
-    this.state.qty = 1;
+    this.shopState.qty = 1;
     this.sfx("select");
     this.render();
   }
 
   static #onRemoveFromCart(event, target) {
     const key = target.dataset.key;
-    this.state.cart = this.state.cart.filter((r) => {
+    this.shopState.cart = this.shopState.cart.filter((r) => {
       const k = r.source === "buyback" ? `buyback:${r.entryId}` : `catalog:${r.categoryId}:${r.entryId}`;
       return k !== key;
     });
@@ -552,7 +552,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #onCheckout() {
-    if (this.state.busy) return;
+    if (this.shopState.busy) return;
     const shop = this.shop;
     const buyer = this.buyer;
     if (this.preview) return ui.notifications.info(game.i18n.localize("NEONMARKET.UI.PreviewNoTrade"));
@@ -577,18 +577,18 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
     await this.#trade("buy", {
       buyerUuid: buyer.uuid,
       shopUuid: this.shopActor.uuid,
-      cart: this.state.cart.map((r) => ({ ...r }))
+      cart: this.shopState.cart.map((r) => ({ ...r }))
     }, () => {
-      this.state.cart = [];
-      this.state.focus = null;
+      this.shopState.cart = [];
+      this.shopState.focus = null;
       this.say("purchase");
     });
   }
 
   static async #onSell() {
-    if (this.state.busy) return;
+    if (this.shopState.busy) return;
     const buyer = this.buyer;
-    const key = this.state.focus?.key;
+    const key = this.shopState.focus?.key;
     if (this.preview) return ui.notifications.info(game.i18n.localize("NEONMARKET.UI.PreviewNoTrade"));
     if (!buyer || !key?.startsWith("sell:")) return;
     const itemId = key.split(":")[1];
@@ -596,7 +596,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!item) return;
     const shop = this.shop;
     const stack = CPR.isStackable(item);
-    const units = stack ? (CPR.hasInstalled(item) ? CPR.getAmount(item) : this.state.qty) : 1;
+    const units = stack ? (CPR.hasInstalled(item) ? CPR.getAmount(item) : this.shopState.qty) : 1;
     const qty = units;
     const payout = sellPrice(item, units, shop, this.shopActor);
 
@@ -615,7 +615,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       shopUuid: this.shopActor.uuid,
       items: [{ itemId, qty }]
     }, () => {
-      this.state.focus = null;
+      this.shopState.focus = null;
       this.say("sell");
     });
   }
@@ -626,7 +626,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   async #trade(op, payload, onSuccess) {
-    this.state.busy = true;
+    this.shopState.busy = true;
     this.render();
     try {
       const result = await ShopSocket.request(op, payload);
@@ -639,7 +639,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       this.sfx("error");
       this.#flash("error");
     } finally {
-      this.state.busy = false;
+      this.shopState.busy = false;
       if (this.rendered) this.render();
     }
   }
