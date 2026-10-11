@@ -9,6 +9,7 @@ with eurobucks that land in the CPR wealth ledger.
 | Foundry VTT | v12 (built with v13+ APIs in mind, see below) |
 | Cyberpunk RED - CORE | 0.92 (verified against 0.92.4 source) |
 
+![Night City chrome, the default theme](docs/theme-chrome.png)
 ![Character layout themes](docs/themes-character.png)
 ![Grid layout themes](docs/themes-grid.png)
 

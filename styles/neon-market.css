@@ -106,6 +106,9 @@
   font-family: var(--nm-font-body);
   font-size: 15px;
   line-height: 1.4;
+  /* Inherited, so every scrolling pane gets a thin themed bar. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--nm-accent) 70%, transparent) transparent;
   isolation: isolate;
   animation: nm-shell-in 280ms ease-out both;
 }
@@ -644,6 +647,7 @@
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
+  scrollbar-color: var(--nm-accent) transparent;
 }
 .neon-market .layout-character .nm-cart-lines li {
   flex: 0 0 auto;
@@ -810,6 +814,7 @@
 .neon-market .nm-qty output,
 .neon-market .nm-stats dd,
 .neon-market .nm-cart-price,
+.neon-market .nm-cart-after span,
 .neon-market .nm-balance strong,
 .neon-market .nm-funds strong {
   font-family: var(--nm-font-num);

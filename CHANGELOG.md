@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+- Fixed: "Left after paying" showed its amount in capitals ("950EB").
+- Every scrolling pane in the shop has a thin scrollbar in the theme's color, instead of the browser's default (a bright white bar under the cart in some browsers).
+- README screenshots show the 1.2 look, with a new one of the Night City chrome theme.
+
 ## 1.2.0
 
 One look with Neon Hub: the market now wears the Neon Hub calendar's chrome.
