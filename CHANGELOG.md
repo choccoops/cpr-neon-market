@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0
+
+Ripperdoc clinics and hospitals.
+
+- **Clinics.** Any actor can be a ripperdoc clinic or hospital, alongside its shop or on its own. Patients book procedures; the GM's client rolls the doctor's check, charges the fee and applies the result, with a chat card for each.
+- **Healing, per the Core Rulebook.** Stabilization by wound state, Quick Fixes and Treatments for each critical injury at the DVs on the injury (Cybertech for injuries to cyberware), hospital beds and cryotanks that heal by BODY each day, and Humanity and addiction therapy. Quick Fixes wear off when the world clock passes into the next day.
+- **Cyberware installation.** Bring your own cyberware; the facility installs it if it's at or below its level (Mall, Clinic, Hospital), using CPR's own install and Humanity Loss rolls. A failed surgery can destroy the cyberware, as in the book.
+- **Fees** default to the rulebook's prices, are all editable, and can be 0 for free work. They can be paid into the clinic actor's eurobucks. HP and Humanity changes are recorded in the character's CPR ledgers.
+- The clinic links to the same actor's store and back; the G key opens the clinic when an actor has one. API: `openClinic`, `configureClinic`, `getClinic`, `setClinic`.
+
 ## 1.2.3
 
 - **Fixed: browse buttons in the shop editor did nothing on Foundry v12.** Neon Market looked up v12's FilePicker and TextEditor in a way that only works in v13 (the same fix as Neon Hub 1.3.1). This also fixes dragging items into a catalog and showing item descriptions in the shop, and works with The Forge's file picker.

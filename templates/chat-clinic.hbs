@@ -1,0 +1,28 @@
+<div class="neon-market-receipt nm-clinic-card {{#if success}}is-success{{else}}is-failure{{/if}}" style="--nm-accent:{{accent}}">
+  <header>
+    <i class="fa-solid fa-user-doctor"></i>
+    <div>
+      <strong>{{clinicName}}</strong>
+      <span>{{procedure}}</span>
+    </div>
+  </header>
+  <p class="nm-clinic-patient">{{localize "NEONMARKET.Clinic.Card.Patient" name=patient}}{{#if doctor}} · {{localize "NEONMARKET.Clinic.Card.Doctor" name=doctor}}{{/if}}</p>
+  {{#if check}}
+  <div class="nm-clinic-roll">
+    <span>{{check.skill}} {{check.base}} + <b>{{check.die}}</b>{{#if check.crit}} <b>{{check.crit}}</b>{{/if}}</span>
+    <strong>{{check.total}}</strong>
+    <em>{{localize "NEONMARKET.Clinic.Card.VsDv" dv=check.dv}}</em>
+  </div>
+  {{/if}}
+  <p class="nm-clinic-verdict">{{#if success}}{{localize "NEONMARKET.Clinic.Card.Success"}}{{else}}{{localize "NEONMARKET.Clinic.Card.Failure"}}{{/if}}</p>
+  {{#if lines.length}}
+  <ul>
+    {{#each lines}}<li><span>{{this}}</span></li>{{/each}}
+  </ul>
+  {{/if}}
+  <footer>
+    <span>{{localize "NEONMARKET.Receipt.Paid"}}</span>
+    <strong>{{fee}}</strong>
+  </footer>
+  {{#if balance}}<p class="nm-receipt-balance">{{localize "NEONMARKET.Receipt.Balance" actor=patient balance=balance}}</p>{{/if}}
+</div>

@@ -107,6 +107,61 @@ install tree (`flags.cprInstallTree`) the system uses when you drag items betwee
 Loaded ammunition never comes along. A loaded weapon is unloaded before it's sold, and the
 rounds go back to the seller's ammo.
 
+## Ripperdoc clinics and hospitals
+
+![A ripperdoc clinic](docs/clinic.png)
+
+Any actor can also be a **clinic**: a ripperdoc, a street clinic or a hospital that patches
+characters up and installs their cyberware, following the Core Rulebook's healing rules. An actor
+can be a clinic and a shop at once; the clinic window then has a button to its store, and the
+store has one back.
+
+**Set one up (GM):** the **Clinic** button in an actor sheet header, *Clinic settings* in the Actors
+sidebar's right-click menu, or the medical-bag button in the Token HUD. Tick *Open for patients*,
+then on *Doctor and services*:
+
+- **Facility:** Mall, Clinic or Hospital. It decides which cyberware the place can install (a clinic
+  does Mall and Clinic installs, a hospital does all three, CRB p.110), and Surgery needs a clinic or hospital.
+- **The doctor's checks:** STAT + Skill for First Aid, Paramedic, Surgery, Medical Tech and Cybertech
+  (TECH + skill for all five). *Fill from this actor* reads them from the actor's TECH, skills and
+  Medtech abilities. 0 means the doctor can't do that.
+- **Services:** switch off anything this place doesn't offer.
+
+**Players** walk up and press **G**, or use the doctor button in the Token HUD, pick their character
+as the patient, choose a procedure and book it. Every procedure shows its price and the doctor's
+chance of success first. Like trades, bookings go to the GM's client (so the Shop Terminal trick
+works here too), which rolls the doctor's check and applies the result.
+
+| Procedure | Doctor's check | Price (default) | Effect |
+| --- | --- | --- | --- |
+| Stabilization | First Aid or Paramedic vs DV10 / 13 / 15 by wound state | 50 / 100 / 500eb | Starts natural healing. Mortally wounded patients come back to 1 HP. Resets the death save penalty. |
+| Quick Fix | The injury's listed skill and DV | By DV (hospital table) | The injury's effects switch off until the world clock reaches the next day. Injuries whose Treatment is "Quick Fix" are removed for good. |
+| Treatment | Paramedic or Surgery at the injury's DV, whichever has better odds | By DV | Removes the critical injury. |
+| Hospital bed | None | 100eb a day | BODY in HP per day, up to max. Patient must be above 0 HP. |
+| Cryotank | Medical Tech vs DV13 | 100eb a day (your call; the book has no price) | Twice BODY in HP per day. |
+| Therapy | Medical Tech vs DV15 / DV17 (extreme) | 500 / 1,000eb, +100eb a night to stay | Regain 2d6 / 4d6 Humanity up to max, or kick one addiction (the GM removes it). |
+| Install cyberware | Surgery vs DV13 / 15 / 17 by install level | 100 / 500 / 1,000eb | The patient brings the cyberware, uninstalled, in their inventory. CPR installs it and rolls Humanity Loss. |
+
+A tick on *cyberware that replaced the body part* has the doctor use Cybertech at the listed DV
+instead (CRB p.223). Rolls are 1d10 with CPR criticals (a 10 adds a die, a 1 subtracts one) and
+must beat the DV. Each booking posts a card with the roll, the result and the fee, and HP and
+Humanity changes go in the character's CPR ledgers.
+
+**Fees** default to the rulebook's prices and are all editable; set any of them to 0 to make it free
+(the free-installs case). *Options:* charge for failed procedures (on, as the book does for therapy),
+failed installs destroy the cyberware (on, CRB p.226), Humanity Loss rolled or fixed, and paying fees
+into the clinic actor's own eurobucks. Selling medicines and cyberware is the store's job: make the
+same actor a shop too.
+
+GM calls the module leaves to you, as the book does: whether a patient may get cyberware installed while
+suffering a related critical injury, how much in-world time passes, and removing an addiction after therapy.
+
+```js
+api.openClinic(actorOrUuid);      // open a clinic for yourself
+api.configureClinic(actorOrUuid); // GM: clinic settings
+await api.getClinic(actorOrUuid); // read the clinic config
+```
+
 ## Settings
 
 | Setting | Default | What it does |
@@ -136,10 +191,15 @@ renames one degrades to "no data" rather than breaking a trade. After a system u
 | Loaded ammo | `system.hasAmmoLoaded`, `item.unload()` | Unloaded before sale. |
 | Core items | `system.core` | Never listed; CPR refuses to add them to actors. |
 | Vendor settings | `system.vendor.itemTypes.<type>.isPurchasing / purchasePercentage` | Container actors. |
+| HP, Humanity | `system.derivedStats.hp`, `system.derivedStats.humanity` (value, max, transactions) | Clinic healing and therapy write ledger entries. |
+| Wound state | `actor.getWoundState()`, `system.derivedStats.deathSave.penalty` | Stabilization resets the penalty. |
+| Critical injuries | `criticalInjury` items: `system.quickFix` / `system.treatment` type and DVs, `system.location` | DVs read straight from the injury. |
+| Cyberware install | `installLocation`, `isFoundational`, `type`, `installItems()`, `loseHumanityValue()` | Same calls as `CPRActor.installCyberware`, without its dialog. |
+| Doctor's skills | Skill items by name; Medtech role abilities "Surgery Skill", "Medical Tech Skill" | Only for *Fill from this actor*. |
 
 ## Forward compatibility (Foundry v13+)
 
-- Both windows use **ApplicationV2**, the framework v13+ is built on.
+- Every window uses **ApplicationV2**, the framework v13+ is built on.
 - `scripts/compat.js` resolves APIs that move into `foundry.*` namespaces in v13
   (FilePicker, TextEditor, AudioHelper, renderTemplate, loadTemplates) and falls back to the v12 globals.
 - Hooks are registered for both v12 (Application v1) and v13 (Application v2) sheet headers,
@@ -151,7 +211,8 @@ renames one degrades to "no data" rather than breaking a trade. After a system u
 
 - Tested with static renders of the UI, not yet in a live Foundry world. Try it on a copy first.
 - Item Piles and the system's own container shops are separate systems; don't run the same actor through both.
-- The editor is GM-only.
+- The editors are GM-only.
+- Clinics don't track beds or cryotanks in use, or in-world time; the GM runs the clock.
 
 ## License
 

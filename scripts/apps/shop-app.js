@@ -52,7 +52,8 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       removeFromCart: ShopApp.#onRemoveFromCart,
       checkout: ShopApp.#onCheckout,
       sell: ShopApp.#onSell,
-      configure: ShopApp.#onConfigure
+      configure: ShopApp.#onConfigure,
+      openClinic: ShopApp.#onOpenClinic
     }
   };
 
@@ -69,6 +70,8 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static open(actor, options = {}) {
     if (!actor) return null;
+    // One full-screen window at a time: close any open clinic (reached through the API to avoid a circular import).
+    for (const app of game.modules.get(MODULE_ID).api?.apps?.ClinicApp?.instances.values() ?? []) app.close();
     for (const [uuid, app] of this.instances) {
       if (uuid !== actor.uuid) app.close();
     }
@@ -150,6 +153,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       isCharacter: shop.layout === "character",
       isGrid: shop.layout === "grid",
       isGM: game.user.isGM,
+      hasClinic: !this.preview && !!game.modules.get(MODULE_ID).api?.isClinic?.(this.shopActor),
       preview: this.preview,
       closedBanner: !shop.enabled && game.user.isGM && !this.preview,
       labels: {
@@ -623,6 +627,12 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static #onConfigure() {
     if (!game.user.isGM) return;
     game.modules.get(MODULE_ID).api.configure(this.shopActor);
+  }
+
+  static #onOpenClinic() {
+    const actor = this.shopActor;
+    this.close();
+    game.modules.get(MODULE_ID).api.openClinic(actor);
   }
 
   async #trade(op, payload, onSuccess) {

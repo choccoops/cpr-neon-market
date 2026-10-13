@@ -1,0 +1,153 @@
+<div class="nm-shell {{rootClass}}" style="{{style}}">
+  <div class="nm-backdrop" aria-hidden="true"></div>
+  <div class="nm-fx" aria-hidden="true"></div>
+
+  {{#if closedBanner}}
+  <div class="nm-banner-closed">
+    <i class="fa-solid fa-lock"></i> {{localize "NEONMARKET.Clinic.ClosedToPlayers"}}
+  </div>
+  {{/if}}
+  {{#if preview}}
+  <div class="nm-banner-closed nm-banner-preview">
+    <i class="fa-solid fa-eye"></i> {{localize "NEONMARKET.UI.PreviewBanner"}}
+  </div>
+  {{/if}}
+
+  <section class="nm-stage">
+    {{> "modules/cpr-neon-market/templates/parts/stage.hbs"}}
+  </section>
+
+  <section class="nm-counter">
+    <header class="nm-header">
+      <div class="nm-title">
+        <h1 class="nm-shop-name" data-text="{{identity.name}}">{{identity.name}}</h1>
+        {{#if identity.subtitle}}<p class="nm-subtitle">{{identity.subtitle}}</p>{{/if}}
+      </div>
+      <div class="nm-header-tools">
+        {{#if hasStore}}
+        <button type="button" class="nm-icon-btn" data-action="openStore" data-tooltip="{{localize 'NEONMARKET.Clinic.Store'}}" aria-label="{{localize 'NEONMARKET.Clinic.Store'}}"><i class="fa-solid fa-store"></i></button>
+        {{/if}}
+        {{#if isGM}}
+        <button type="button" class="nm-icon-btn" data-action="configure" data-tooltip="{{localize 'NEONMARKET.Clinic.Configure'}}" aria-label="{{localize 'NEONMARKET.Clinic.Configure'}}"><i class="fa-solid fa-sliders"></i></button>
+        {{/if}}
+        <button type="button" class="nm-icon-btn nm-close" data-action="close" aria-label="{{localize 'Close'}}"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </header>
+
+    <div class="nm-nav">
+      <div class="nm-modes" role="tablist">
+        {{#each modes}}
+        <button type="button" class="nm-mode {{#if active}}active{{/if}}" role="tab" aria-selected="{{active}}" data-action="setMode" data-mode="{{key}}">
+          <i class="{{icon}}"></i><span>{{label}}</span>
+        </button>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="nm-body">
+      <div class="nm-list" role="listbox" aria-label="{{identity.name}}">
+        {{#each rows}}
+        <button type="button" class="nm-item tier-everyday {{#if focused}}focused{{/if}} {{#if blocked}}sold-out{{/if}} {{#unless affordable}}unaffordable{{/unless}}"
+                role="option" aria-selected="{{focused}}" data-action="focus" data-key="{{key}}">
+          <span class="nm-item-img">{{#if img}}<img src="{{img}}" alt="" loading="lazy">{{else}}<i class="{{icon}}"></i>{{/if}}</span>
+          <span class="nm-item-main">
+            <span class="nm-item-name">{{name}}</span>
+            <span class="nm-item-meta">
+              {{#if sub}}<span>{{sub}}</span>{{/if}}
+              {{#if meta}}<span class="nm-clinic-check">{{meta}}</span>{{/if}}
+            </span>
+          </span>
+          <span class="nm-item-side">
+            <span class="nm-price">{{price}}</span>
+            {{#if chance}}<span class="nm-clinic-chance">{{chance}}</span>{{/if}}
+          </span>
+        </button>
+        {{else}}
+        <div class="nm-empty">{{emptyText}}</div>
+        {{/each}}
+      </div>
+
+      <aside class="nm-detail">
+        {{#if focus}}
+        <div class="nm-detail-body">
+          <div class="nm-detail-head">
+            <span class="nm-detail-img nm-clinic-icon">{{#if focus.img}}<img src="{{focus.img}}" alt="">{{else}}<i class="{{focus.icon}}"></i>{{/if}}</span>
+            <div>
+              <h2 class="nm-detail-name">{{focus.name}}</h2>
+              {{#if focus.sub}}<p class="nm-detail-type">{{focus.sub}}</p>{{/if}}
+            </div>
+          </div>
+          <p class="nm-desc">{{focus.rule}}</p>
+          {{#if focus.perDay}}<p class="nm-clinic-line"><i class="fa-solid fa-coins"></i> {{focus.perDay}}</p>{{/if}}
+          {{#if focus.check}}<p class="nm-clinic-line"><i class="fa-solid fa-dice-d10"></i> {{focus.check}}</p>{{/if}}
+          {{#if focus.target}}<p class="nm-clinic-line"><i class="fa-solid fa-diagram-project"></i> {{localize "NEONMARKET.Clinic.InstallInto" target=focus.target}}</p>{{/if}}
+          {{#if focus.targets}}
+          <label class="nm-clinic-field">
+            <span>{{localize "NEONMARKET.Clinic.InstallTarget"}}</span>
+            <select name="target">
+              {{#each focus.targets}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+            </select>
+          </label>
+          {{/if}}
+          {{#if focus.showCyber}}
+          <label class="nm-clinic-toggle">
+            <input type="checkbox" name="cyber" {{#if focus.cyber}}checked{{/if}}>
+            <span>{{localize "NEONMARKET.Clinic.CyberPart"}}</span>
+          </label>
+          {{/if}}
+          {{#if focus.showStay}}
+          <label class="nm-clinic-toggle">
+            <input type="checkbox" name="stay" {{#if focus.stay}}checked{{/if}}>
+            <span>{{localize "NEONMARKET.Clinic.Stay" price=focus.stayPrice}}</span>
+          </label>
+          {{/if}}
+          {{#if focus.blocked}}<p class="nm-clinic-blocked"><i class="fa-solid fa-triangle-exclamation"></i> {{focus.blocked}}</p>{{/if}}
+          {{#if focus.failNote}}<p class="nm-hint">{{focus.failNote}}</p>{{/if}}
+        </div>
+        <div class="nm-detail-actions">
+          {{#if focus.showDays}}
+          <div class="nm-qty" aria-label="{{localize 'NEONMARKET.Clinic.DaysLabel'}}">
+            <button type="button" data-action="qtyDown" aria-label="-" {{#if (eq focus.days 1)}}disabled{{/if}}><i class="fa-solid fa-minus"></i></button>
+            <output>{{focus.days}}</output>
+            <button type="button" data-action="qtyUp" aria-label="+" {{#if (eq focus.days 30)}}disabled{{/if}}><i class="fa-solid fa-plus"></i></button>
+            <small>{{localize "NEONMARKET.Clinic.DaysLabel"}}</small>
+          </div>
+          {{/if}}
+          <span class="nm-line-total">{{focus.price}}</span>
+          <button type="button" class="nm-cta" data-action="book" {{#unless focus.canBook}}disabled{{/unless}}>
+            <i class="fa-solid fa-user-doctor"></i> {{localize "NEONMARKET.Clinic.Book"}}
+          </button>
+        </div>
+        {{else}}
+        <div class="nm-detail-empty">
+          <i class="fa-solid fa-stethoscope" aria-hidden="true"></i>
+          <p>{{localize "NEONMARKET.Clinic.PickProcedure"}}</p>
+        </div>
+        {{/if}}
+      </aside>
+    </div>
+
+    <footer class="nm-footer nm-clinic-footer">
+      <div class="nm-buyer">
+        {{#if patient}}<img src="{{patient.img}}" alt="">{{/if}}
+        <div class="nm-buyer-info">
+          {{#if patients.length}}
+          <select name="patient" aria-label="{{localize 'NEONMARKET.Clinic.Patient'}}">
+            {{#each patients}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+          </select>
+          {{else}}
+          <span class="nm-hint">{{localize "NEONMARKET.Clinic.PickPatient"}}</span>
+          {{/if}}
+          {{#if patient.wealth}}<span class="nm-balance">{{localize "NEONMARKET.Label.balance"}} <strong>{{patient.wealth}}</strong></span>{{/if}}
+        </div>
+      </div>
+      {{#if patient}}
+      <dl class="nm-clinic-vitals">
+        <div class="{{#if patient.hpLow}}is-low{{/if}}"><dt>{{localize "NEONMARKET.Clinic.HP"}}</dt><dd>{{patient.hp}}</dd></div>
+        <div><dt>{{localize "NEONMARKET.Clinic.State"}}</dt><dd>{{patient.state}}</dd></div>
+        <div><dt>{{localize "NEONMARKET.Clinic.Humanity"}}</dt><dd>{{patient.humanity}}</dd></div>
+      </dl>
+      {{/if}}
+    </footer>
+  </section>
+</div>
