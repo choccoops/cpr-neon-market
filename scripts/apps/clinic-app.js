@@ -1,8 +1,8 @@
 import { MODULE_ID, TEMPLATE_PATH } from "../constants.js";
 import { CPR } from "../cpr-adapter.js";
 import { ShopSocket } from "../socket.js";
-import { formatEb, isShop } from "../shop-data.js";
-import { ShopApp } from "./shop-app.js";
+import { formatEb } from "../shop-data.js";
+import { venueLinks, openVenue, closeOtherVenues } from "../venues.js";
 import { getClinic, normalizeClinic, THERAPIES } from "../clinic/clinic-data.js";
 import { ClinicOps } from "../clinic/clinic-ops.js";
 import {
@@ -59,7 +59,7 @@ export class ClinicApp extends HandlebarsApplicationMixin(ApplicationV2) {
       qtyUp: ClinicApp.#onDaysUp,
       qtyDown: ClinicApp.#onDaysDown,
       book: ClinicApp.#onBook,
-      openStore: ClinicApp.#onOpenStore,
+      openVenue: ClinicApp.#onOpenVenue,
       configure: ClinicApp.#onConfigure
     }
   };
@@ -77,10 +77,7 @@ export class ClinicApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static open(actor, options = {}) {
     if (!actor) return null;
-    for (const app of ShopApp.instances.values()) app.close();
-    for (const [uuid, app] of this.instances) {
-      if (uuid !== actor.uuid) app.close();
-    }
+    closeOtherVenues(this.instances.get(actor.uuid));
     let app = this.instances.get(actor.uuid);
     if (app) {
       if (options.preview !== undefined) app.preview = options.preview;
@@ -148,7 +145,7 @@ export class ClinicApp extends HandlebarsApplicationMixin(ApplicationV2) {
       isGM: game.user.isGM,
       preview: this.preview,
       closedBanner: !clinic.enabled && game.user.isGM && !this.preview,
-      hasStore: isShop(this.clinicActor),
+      venueLinks: this.preview ? [] : venueLinks(this.clinicActor, "clinic"),
       modes: tabs,
       rows,
       emptyText: this.#emptyText(clinic, patient, s.tab),
@@ -428,10 +425,8 @@ export class ClinicApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.render();
   }
 
-  static #onOpenStore() {
-    const actor = this.clinicActor;
-    this.close();
-    ShopApp.open(actor);
+  static #onOpenVenue(event, target) {
+    openVenue(this.clinicActor, target.dataset.venue);
   }
 
   static #onConfigure() {

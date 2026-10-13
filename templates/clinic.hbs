@@ -24,9 +24,7 @@
         {{#if identity.subtitle}}<p class="nm-subtitle">{{identity.subtitle}}</p>{{/if}}
       </div>
       <div class="nm-header-tools">
-        {{#if hasStore}}
-        <button type="button" class="nm-icon-btn" data-action="openStore" data-tooltip="{{localize 'NEONMARKET.Clinic.Store'}}" aria-label="{{localize 'NEONMARKET.Clinic.Store'}}"><i class="fa-solid fa-store"></i></button>
-        {{/if}}
+        {{#each venueLinks}}<button type="button" class="nm-icon-btn" data-action="openVenue" data-venue="{{key}}" data-tooltip="{{label}}" aria-label="{{label}}"><i class="{{icon}}"></i></button>{{/each}}
         {{#if isGM}}
         <button type="button" class="nm-icon-btn" data-action="configure" data-tooltip="{{localize 'NEONMARKET.Clinic.Configure'}}" aria-label="{{localize 'NEONMARKET.Clinic.Configure'}}"><i class="fa-solid fa-sliders"></i></button>
         {{/if}}

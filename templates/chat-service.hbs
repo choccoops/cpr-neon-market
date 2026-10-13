@@ -1,0 +1,29 @@
+<div class="neon-market-receipt nm-service-card {{#if success}}is-success{{else}}is-failure{{/if}}" style="--nm-accent:{{accent}}">
+  <header>
+    <i class="{{icon}}"></i>
+    <div>
+      <strong>{{venueName}}</strong>
+      <span>{{job}}</span>
+    </div>
+  </header>
+  <p class="nm-service-who">{{customerLine}}{{#if staffLine}} · {{staffLine}}{{/if}}</p>
+  {{#if check}}
+  <div class="nm-service-roll">
+    <span>{{check.skill}} {{check.base}} + <b>{{check.die}}</b>{{#if check.crit}} <b>{{check.crit}}</b>{{/if}}</span>
+    <strong>{{check.total}}</strong>
+    <em>{{localize "NEONMARKET.Service.Card.VsDv" dv=check.dv}}</em>
+  </div>
+  {{/if}}
+  <p class="nm-service-verdict">{{#if success}}{{localize "NEONMARKET.Service.Card.Success"}}{{else}}{{localize "NEONMARKET.Service.Card.Failure"}}{{/if}}</p>
+  {{#if lines.length}}
+  <ul>
+    {{#each lines}}<li><span>{{this}}</span></li>{{/each}}
+  </ul>
+  {{/if}}
+  {{#if time}}<p class="nm-service-time"><i class="fa-regular fa-clock"></i> {{time}}</p>{{/if}}
+  <footer>
+    <span>{{localize "NEONMARKET.Receipt.Paid"}}</span>
+    <strong>{{fee}}</strong>
+  </footer>
+  {{#if balance}}<p class="nm-receipt-balance">{{localize "NEONMARKET.Receipt.Balance" actor=customer balance=balance}}</p>{{/if}}
+</div>

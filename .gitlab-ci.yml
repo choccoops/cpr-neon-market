@@ -19,6 +19,7 @@ build:
     - apk add --no-cache jq zip
     - for f in $(find scripts -name "*.js"); do node --input-type=module --check < "$f"; done
     - jq empty module.json lang/*.json
+    - for f in tests/*.test.mjs; do node "$f" || exit 1; done
     - VERSION="${CI_COMMIT_TAG#v}"
     - >
       jq --arg v "$VERSION" --arg url "$CI_PROJECT_URL"
