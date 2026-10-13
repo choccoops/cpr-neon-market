@@ -43,18 +43,30 @@ export const CPR = {
    * @param {string} [userName] - who made the trade, appended as the system does
    */
   async changeWealth(actor, delta, reason, userName = game.user.name) {
-    delta = Math.trunc(Number(delta) || 0);
-    if (!delta) return;
+    if (!Math.trunc(Number(delta) || 0)) return;
     if (!this.hasWealth(actor)) throw new Error(game.i18n.format("NEONMARKET.Error.NoWealth", { name: actor.name }));
+    await this.changeLedger(actor, "wealth", delta, reason, userName);
+  },
 
-    const total = this.getWealth(actor) + delta;
-    const key = delta > 0 ? "CPR.ledger.increaseSentence" : "CPR.ledger.decreaseSentence";
+  /**
+   * Change any CPR ledger property (wealth, derivedStats.hp, derivedStats.humanity) and record
+   * it the way CPRActor.deltaLedgerProperty does, but awaited. Returns the change actually made,
+   * which is smaller than asked when `max` caps it.
+   */
+  async changeLedger(actor, prop, delta, reason, userName = game.user.name, { max = null } = {}) {
+    const before = Math.trunc(Number(getProperty(actor, `system.${prop}.value`)) || 0);
+    let total = before + Math.trunc(Number(delta) || 0);
+    if (max !== null) total = Math.min(total, Math.max(before, max));
+    const change = total - before;
+    if (!change) return 0;
+    const key = change > 0 ? "CPR.ledger.increaseSentence" : "CPR.ledger.decreaseSentence";
     const sentence = game.i18n.has(key)
-      ? game.i18n.format(key, { property: "wealth", amount: Math.abs(delta), total })
-      : `wealth ${delta > 0 ? "increased" : "decreased"} by ${Math.abs(delta)} to ${total}`;
-    const transactions = deepClone(getProperty(actor, "system.wealth.transactions") ?? []);
+      ? game.i18n.format(key, { property: prop, amount: Math.abs(change), total })
+      : `${prop} ${change > 0 ? "increased" : "decreased"} by ${Math.abs(change)} to ${total}`;
+    const transactions = deepClone(getProperty(actor, `system.${prop}.transactions`) ?? []);
     transactions.push([sentence, userName ? `${reason} - ${userName}` : reason]);
-    await actor.update({ "system.wealth.value": total, "system.wealth.transactions": transactions });
+    await actor.update({ [`system.${prop}.value`]: total, [`system.${prop}.transactions`]: transactions });
+    return change;
   },
 
   /* ---------------------------------------- */

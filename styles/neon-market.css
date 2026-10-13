@@ -1215,6 +1215,123 @@
 }
 
 /* ==========================================================================
+   Clinic: the shop's shell with procedures in place of listings
+   ========================================================================== */
+.neon-market .nm-item-img > i { font-size: 20px; color: var(--nm-accent); }
+.neon-market .nm-clinic-check { color: var(--nm-accent-2); }
+.neon-market .nm-clinic-chance {
+  font-family: var(--nm-font-num);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--nm-accent-2);
+}
+.neon-market .nm-item.sold-out .nm-clinic-chance { color: var(--nm-muted); }
+.neon-market .nm-clinic-icon {
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  color: var(--nm-accent);
+}
+.neon-market .nm-clinic-icon img { width: 100%; height: 100%; object-fit: contain; }
+.neon-market .nm-clinic-line {
+  margin: 10px 0 0 !important;
+  padding: 7px 10px;
+  border-left: 3px solid var(--nm-accent-2);
+  background: color-mix(in srgb, var(--nm-accent-2) 7%, transparent);
+  font-family: var(--nm-font-ui);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.neon-market .nm-clinic-line i { color: var(--nm-accent-2); margin-right: 4px; }
+.neon-market .nm-clinic-blocked {
+  margin: 10px 0 0 !important;
+  padding: 7px 10px;
+  border-left: 3px solid #ff8a1f;
+  background: rgba(255, 138, 31, 0.1);
+  font-size: 13px;
+}
+.neon-market .nm-clinic-blocked i { color: #ff8a1f; margin-right: 4px; }
+.neon-market .nm-detail-body .nm-hint { margin-top: 8px; }
+.neon-market .nm-clinic-toggle,
+.neon-market .nm-clinic-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.neon-market .nm-clinic-toggle input { margin: 0; accent-color: var(--nm-accent); }
+.neon-market .nm-clinic-field span {
+  font-family: var(--nm-font-ui);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nm-muted);
+}
+.neon-market .nm-clinic-field select {
+  flex: 1;
+  height: 30px;
+  background: transparent;
+  color: var(--nm-text);
+  border: 0;
+  border-bottom: 1px solid var(--nm-line);
+  font: inherit;
+}
+.neon-market .nm-clinic-field select option { background: var(--nm-bg); color: var(--nm-text); }
+.neon-market .nm-clinic-vitals {
+  display: flex;
+  justify-self: end;
+  width: max-content;
+  max-width: 100%;
+  gap: 1px;
+  margin: 0;
+  background: var(--nm-line);
+  border: 1px solid var(--nm-line);
+  clip-path: var(--nc-notch-card);
+}
+.neon-market .nm-clinic-vitals > div { min-width: 110px; padding: 6px 12px; background: var(--nm-panel); }
+.neon-market .nm-clinic-vitals dt {
+  font-family: var(--nm-font-ui);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--nm-muted);
+}
+.neon-market .nm-clinic-vitals dd { margin: 0; font-family: var(--nm-font-num); font-size: 17px; letter-spacing: 0.04em; }
+.neon-market .nm-clinic-vitals .is-low dd { color: #ff6b6b; }
+.neon-market .layout-character .nm-clinic-footer { grid-template-columns: auto minmax(0, 1fr); }
+
+/* Chat card */
+.neon-market-receipt .nm-clinic-patient { margin: 0 0 6px; font-size: 12px; color: var(--nc-dim); }
+.neon-market-receipt .nm-clinic-roll {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid var(--nc-line);
+  background: rgba(0, 0, 0, 0.35);
+  font-family: var(--nc-display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.neon-market-receipt .nm-clinic-roll span { flex: 1; }
+.neon-market-receipt .nm-clinic-roll b { font-weight: 400; color: var(--nc-cyan); }
+.neon-market-receipt .nm-clinic-roll strong { font-size: 20px; font-weight: 400; color: #fff; }
+.neon-market-receipt .nm-clinic-roll em { font-style: normal; color: var(--nc-dim); }
+.neon-market-receipt .nm-clinic-verdict {
+  margin: 6px 0 4px;
+  font-family: var(--nc-display);
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+.neon-market-receipt.is-success .nm-clinic-verdict { color: #39ff88; }
+.neon-market-receipt.is-failure .nm-clinic-verdict { color: #ff8a1f; }
+/* Result lines are sentences, not prices: undo the receipt's price column style. */
+.neon-market-receipt.nm-clinic-card li span:last-child { color: var(--nc-text); font-family: inherit; letter-spacing: normal; white-space: normal; }
+
+/* ==========================================================================
    Confirmation dialogs
    ========================================================================== */
 .nm-confirm-list { margin: 6px 0 0; padding-left: 18px; }
@@ -1259,6 +1376,7 @@
 .neon-market .nm-config-grid { display: grid; gap: 10px 16px; }
 .neon-market .nm-config-grid.two { grid-template-columns: 1fr 1fr; }
 .neon-market .nm-config-grid.three { grid-template-columns: repeat(3, 1fr); }
+.neon-market .nm-config-grid.four { grid-template-columns: repeat(4, 1fr); }
 .neon-market .nm-config-row { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
 .neon-market .nm-config-row .grow { flex: 1; min-width: 220px; margin: 0; }
 .neon-market .nm-config-buttons { display: flex; gap: 6px; }

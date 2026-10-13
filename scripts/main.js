@@ -5,7 +5,11 @@ import { Transactions } from "./transactions.js";
 import { Interaction } from "./interaction.js";
 import { ShopApp } from "./apps/shop-app.js";
 import { ShopConfigApp } from "./apps/shop-config.js";
+import { ClinicApp } from "./apps/clinic-app.js";
+import { ClinicConfigApp } from "./apps/clinic-config.js";
+import { ClinicOps } from "./clinic/clinic-ops.js";
 import { getShop, saveShop, isShop } from "./shop-data.js";
+import { CLINIC_FLAG, getClinic, saveClinic, isClinic } from "./clinic/clinic-data.js";
 
 function registerSettings() {
   const s = (key, data) => game.settings.register(MODULE_ID, key, { scope: "world", config: true, ...data });
@@ -77,7 +81,10 @@ Hooks.once("init", () => {
     `${TEMPLATE_PATH}/parts/nav.hbs`,
     `${TEMPLATE_PATH}/parts/listing.hbs`,
     `${TEMPLATE_PATH}/parts/detail.hbs`,
-    `${TEMPLATE_PATH}/parts/cart.hbs`
+    `${TEMPLATE_PATH}/parts/cart.hbs`,
+    `${TEMPLATE_PATH}/clinic.hbs`,
+    `${TEMPLATE_PATH}/clinic-config.hbs`,
+    `${TEMPLATE_PATH}/chat-clinic.hbs`
   ]);
 
   const api = {
@@ -92,7 +99,14 @@ Hooks.once("init", () => {
     getShop: async (target) => getShop(await resolveActor(target)),
     setShop: async (target, data) => saveShop(await resolveActor(target), data),
     isShop,
-    apps: { ShopApp, ShopConfigApp }
+    /** Open a ripperdoc clinic or hospital for the current user. */
+    openClinic: async (target, options) => ClinicApp.open(await resolveActor(target), options),
+    /** GM: open the clinic editor. */
+    configureClinic: async (target) => ClinicConfigApp.open(await resolveActor(target)),
+    getClinic: async (target) => getClinic(await resolveActor(target)),
+    setClinic: async (target, data) => saveClinic(await resolveActor(target), data),
+    isClinic,
+    apps: { ShopApp, ShopConfigApp, ClinicApp, ClinicConfigApp }
   };
   game.modules.get(MODULE_ID).api = api;
 });
@@ -100,6 +114,7 @@ Hooks.once("init", () => {
 Hooks.once("ready", () => {
   ShopSocket.init();
   Transactions.init();
+  ClinicOps.init();
   Interaction.registerSocketEvents();
 
   if (game.system.id !== SYSTEM_ID && game.user.isGM) {
@@ -116,16 +131,24 @@ Hooks.on("updateActor", (actor, changes) => {
     || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.-=${FLAG_KEY}`);
   const walletChanged = foundry.utils.hasProperty(changes, "system.wealth");
   if (shopChanged || walletChanged) ShopApp.refreshFor(actor);
+  const clinicChanged = foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${CLINIC_FLAG}`)
+    || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.-=${CLINIC_FLAG}`);
+  if (clinicChanged || walletChanged || foundry.utils.hasProperty(changes, "system.derivedStats")
+    || foundry.utils.hasProperty(changes, "system.stats")) ClinicApp.refreshFor(actor);
 });
 
 for (const hook of ["createItem", "updateItem", "deleteItem"]) {
   Hooks.on(hook, (item) => {
-    if (item.parent instanceof Actor) ShopApp.refreshFor(item.parent);
+    if (item.parent instanceof Actor) {
+      ShopApp.refreshFor(item.parent);
+      ClinicApp.refreshFor(item.parent);
+    }
   });
 }
 
 Hooks.on("canvasTearDown", () => {
   for (const app of ShopApp.instances.values()) app.close();
+  for (const app of ClinicApp.instances.values()) app.close();
 });
 
 async function resolveActor(target) {

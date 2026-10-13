@@ -291,6 +291,211 @@
       "WalletNow": "Wallet now",
       "VendorHint": "This is a Cyberpunk RED container. Its vendor settings still apply here: item types it isn't buying are hidden from the Sell tab, and its buy percentages are used when this shop has no rate of its own.",
       "SellRateHintVendor": "Leave blank to use this container's vendor percentages, or {pct}% for types it doesn't set."
+    },
+    "Clinic": {
+      "OpenClinic": "Open clinic",
+      "SheetButton": "Clinic",
+      "ConfigureClinic": "Clinic settings",
+      "Configure": "Clinic settings",
+      "Store": "Open the store",
+      "ClosedToPlayers": "Clinic closed: only GMs can see it",
+      "PreviewNoBooking": "This is a preview. Save and open the clinic to book procedures.",
+      "PickPatient": "Pick a patient: select your token or set your character.",
+      "PickProcedure": "Pick a procedure to see the price and the doctor's odds.",
+      "Patient": "Patient",
+      "HP": "HP",
+      "State": "Condition",
+      "Humanity": "Humanity",
+      "Book": "Book",
+      "Free": "Free",
+      "NoCharge": "No charge",
+      "NoRoll": "No roll",
+      "Days": "{n} days",
+      "DaysLabel": "days",
+      "PerDay": "Heals {n} HP a day",
+      "Regain": "Regain {formula} Humanity",
+      "AddictionSub": "Kick one addiction",
+      "HumanityLoss": "Humanity Loss {loss}",
+      "CheckMeta": "{skill} vs DV{dv}",
+      "CheckLine": "Doctor's {skill} {base} + 1d10 vs DV{dv}: {chance} chance",
+      "QuickFixedToday": "Quick Fixed today",
+      "ChargedOnFailure": "The fee is charged even if the procedure fails.",
+      "DestroyNote": "A failed installation destroys the cyberware.",
+      "CantAfford": "Not enough eurobucks for {price}.",
+      "CyberPart": "This injury is to cyberware that replaced the body part (the doctor uses Cybertech)",
+      "Stay": "Stay overnight for the week (+{price})",
+      "InstallInto": "Installs into {target}",
+      "InstallTarget": "Install into",
+      "Confirm": "Book {procedure} for {actor}? Price: {price}.",
+      "ConfirmOdds": "The doctor's chance of success: {chance}.",
+      "Approval": "{user} wants to book {procedure} for {actor} at {clinic} ({total}). Allow it?",
+      "Tab": {
+        "care": "Care",
+        "recovery": "Recovery",
+        "therapy": "Therapy",
+        "cyberware": "Cyberware"
+      },
+      "Empty": {
+        "care": "No wounds or critical injuries to treat.",
+        "recovery": "Nothing to book here.",
+        "therapy": "No therapy offered here.",
+        "cyberware": "No cyberware waiting to be installed. Bring it in your inventory, uninstalled."
+      },
+      "Service": {
+        "stabilize": "Stabilization",
+        "quickFix": "Quick Fix",
+        "treatment": "Treatment",
+        "rest": "Hospital bed",
+        "cryo": "Cryotank",
+        "therapy": "Therapy",
+        "install": "Install"
+      },
+      "Therapy": {
+        "standard": "Humanity therapy",
+        "extreme": "Extreme Humanity therapy",
+        "addiction": "Addiction therapy"
+      },
+      "Facility": {
+        "mall": "Mall",
+        "clinic": "Clinic",
+        "hospital": "Hospital"
+      },
+      "Skill": {
+        "firstAid": "First Aid",
+        "paramedic": "Paramedic",
+        "surgery": "Surgery",
+        "medicalTech": "Medical Tech",
+        "cybertech": "Cybertech"
+      },
+      "Location": {
+        "body": "Body",
+        "head": "Head"
+      },
+      "Wound": {
+        "notWounded": "Not wounded",
+        "lightlyWounded": "Lightly wounded",
+        "seriouslyWounded": "Seriously wounded",
+        "mortallyWounded": "Mortally wounded",
+        "dead": "Dead"
+      },
+      "Rule": {
+        "stabilize": "Stops the bleeding and starts natural healing. A Mortally Wounded patient comes back to 1 HP, unconscious for a minute. The DV depends on how badly they're hurt (CRB p.222).",
+        "quickFix": "Removes the injury's effect for the rest of the day; it comes back tomorrow unless the injury is treated. Some injuries are healed for good by a Quick Fix (CRB p.221).",
+        "treatment": "Heals the critical injury for good. Takes four hours. A lost limb or eye is replaced with a cloned part at no extra cost (CRB p.223, p.226).",
+        "rest": "A hospital bed while you heal: your BODY in HP for each day of rest. You need to be stabilized and above 0 HP (CRB p.222, p.225).",
+        "cryo": "Stasis in a cryotank, run by the doctor: you heal twice as fast, your BODY in HP twice over each day (CRB p.353).",
+        "standard": "A week of therapy. On a success you regain 2d6 Humanity, up to your maximum; installed cyberware lowers that maximum (CRB p.229).",
+        "extreme": "A week of intensive therapy. On a success you regain 4d6 Humanity, up to your maximum (CRB p.229).",
+        "addiction": "A week of therapy that frees you of one addiction. The GM removes it from your sheet (CRB p.229).",
+        "install": "Bring the cyberware; the doctor puts it in. It takes four hours, and you roll Humanity Loss as usual. Each facility can only do installations up to its own level (CRB p.110, p.226)."
+      },
+      "Speech": {
+        "Success": "All done. Try not to come back too soon.",
+        "Failure": "That didn't go to plan. We'll talk about it.",
+        "NoFunds": "No eddies, no procedure."
+      },
+      "Card": {
+        "Patient": "Patient: {name}",
+        "Doctor": "Doctor: {name}",
+        "VsDv": "vs DV{dv}",
+        "Success": "Success",
+        "Failure": "Failed"
+      },
+      "Result": {
+        "Stabilized": "{name} is stabilized; natural healing can begin.",
+        "Unconscious": "{name} is back to 1 HP and unconscious for a minute.",
+        "Healed": "{injury} is healed.",
+        "QuickFixed": "{injury}: its effect is gone for the rest of the day.",
+        "HealedHp": "{name} heals {n} HP ({value}/{max}).",
+        "CryoFailed": "The cryotank didn't take; no healing.",
+        "Humanity": "{name} rolls {rolled} and regains {n} Humanity ({value}/{max}).",
+        "Addiction": "{name} is freed of one addiction. GM: remove it from the sheet.",
+        "TherapyFailed": "The week was for nothing.",
+        "Installed": "{item} is installed.",
+        "InstalledIn": "{item} is installed in {target}.",
+        "InstallMissed": "{item} couldn't be installed. The cyberware is intact.",
+        "Destroyed": "{item} was destroyed in the failed surgery."
+      },
+      "Ledger": {
+        "Fee": "{procedure} at {clinic}",
+        "Income": "{procedure} for {patient}",
+        "Stabilized": "Stabilized",
+        "Healed": "Healing at {clinic}",
+        "Therapy": "Therapy at {clinic}"
+      },
+      "Error": {
+        "SelfCare": "The clinic can't treat itself.",
+        "Closed": "This clinic is closed.",
+        "NoService": "This clinic doesn't offer that.",
+        "NotWounded": "{name} doesn't need that right now.",
+        "Dead": "{name} is beyond help.",
+        "NoSkill": "The doctor doesn't have the skill for that.",
+        "NoInjury": "That injury is gone.",
+        "QuickFixHeals": "A Quick Fix heals {injury} for good; book that instead.",
+        "NoQuickFix": "{injury} can't be Quick Fixed here.",
+        "NoTreatment": "{injury} can't be treated here.",
+        "StabilizeFirst": "{name} needs stabilizing first.",
+        "FullHumanity": "{name} is already at full Humanity.",
+        "NoCyberware": "That cyberware isn't waiting to be installed.",
+        "WrongFacility": "{item} needs a {need} installation.",
+        "PickTarget": "Pick where to install {item}.",
+        "NoFoundation": "{item} needs its foundational cyberware installed first.",
+        "InstallFailed": "{item} couldn't be installed into {target}: no room or the wrong type."
+      },
+      "Default": {
+        "Name": "Ripperdoc",
+        "Subtitle": "Chrome installed, bones set, no questions",
+        "Greeting": "Sit down, choom. Where does it hurt?"
+      },
+      "Config": {
+        "Title": "Clinic settings",
+        "Open": "Save and open",
+        "Tab": {
+          "identity": "Identity",
+          "doctor": "Doctor and services",
+          "fees": "Fees",
+          "options": "Options"
+        },
+        "Enabled": "Open for patients",
+        "EnabledHint": "Players can only use a clinic that is open. You can always open it as GM. An actor can be a clinic and a shop at the same time.",
+        "Name": "Clinic name",
+        "Doctor": "Doctor's name",
+        "Greeting": "What the doctor says",
+        "Art": "Doctor art",
+        "LookHeading": "Look",
+        "Facility": "Facility",
+        "FacilityHint": "Mall shops do mall installations only, clinics do mall and clinic, hospitals do everything. Treatments that need Surgery need a clinic or hospital.",
+        "DoctorHeading": "The doctor's checks",
+        "ReadDoctor": "Fill from this actor",
+        "DoctorHint": "STAT + Skill for each check, before the d10 (TECH + skill for all five). 0 means the doctor can't do it. Fill from this actor reads TECH, the skills and the Medtech's Surgery and Medical Tech.",
+        "NoSkillsFound": "{name} has none of these skills.",
+        "SkillsRead": "Read {n} checks from {name}.",
+        "ServicesHeading": "Services",
+        "FeesHint": "Defaults are the rulebook's prices. Set any fee to 0 to make it free.",
+        "DvHeading": "Stabilization, Quick Fix and Treatment",
+        "DvHint": "Priced by the procedure's DV, from the hospital table (CRB p.225).",
+        "DvRow": "DV{dv}+",
+        "ResetFees": "Use rulebook prices",
+        "StayHeading": "Stays",
+        "Bed": "Hospital bed, per day",
+        "Cryo": "Cryotank, per day",
+        "TherapyHeading": "Therapy (one week)",
+        "InstallHeading": "Installation surgery",
+        "InstallHint": "By the cyberware's installation level (CRB p.226). Set to 0 for free installs.",
+        "ChargeOnFailure": "Charge for failed procedures",
+        "ChargeOnFailureHint": "The patient pays whether or not the doctor succeeds, as with the rulebook's therapies.",
+        "DestroyOnFail": "Failed installs destroy the cyberware",
+        "DestroyOnFailHint": "As in the rulebook (CRB p.226). Off: the cyberware stays in the patient's inventory.",
+        "FeesToActor": "Pay fees into this actor's eurobucks",
+        "FeesToActorHint": "Recorded in its CPR wealth ledger. Needs a character or container actor.",
+        "HumanityLoss": "Humanity Loss on install",
+        "HumanityLossHint": "Roll the dice, or take the fixed number (the rulebook uses the fixed number at character creation).",
+        "Humanity": {
+          "roll": "Roll it",
+          "static": "Fixed number"
+        }
+      },
+      "PricePerDay": "{price} a day"
     }
   }
 }
