@@ -26,9 +26,7 @@
         {{#if identity.subtitle}}<p class="nm-subtitle">{{identity.subtitle}}</p>{{/if}}
       </div>
       <div class="nm-header-tools">
-        {{#if hasClinic}}
-        <button type="button" class="nm-icon-btn" data-action="openClinic" data-tooltip="{{localize 'NEONMARKET.Clinic.OpenClinic'}}" aria-label="{{localize 'NEONMARKET.Clinic.OpenClinic'}}"><i class="fa-solid fa-user-doctor"></i></button>
-        {{/if}}
+        {{#each venueLinks}}<button type="button" class="nm-icon-btn" data-action="openVenue" data-venue="{{key}}" data-tooltip="{{label}}" aria-label="{{label}}"><i class="{{icon}}"></i></button>{{/each}}
         {{#if isGM}}
         <button type="button" class="nm-icon-btn" data-action="configure" data-tooltip="{{localize 'NEONMARKET.UI.Configure'}}" aria-label="{{localize 'NEONMARKET.UI.Configure'}}"><i class="fa-solid fa-sliders"></i></button>
         {{/if}}
@@ -69,9 +67,7 @@
       {{#if identity.slogan}}<p class="nm-subtitle">{{identity.slogan}}</p>{{/if}}
     </div>
     <div class="nm-header-tools">
-      {{#if hasClinic}}
-      <button type="button" class="nm-icon-btn" data-action="openClinic" data-tooltip="{{localize 'NEONMARKET.Clinic.OpenClinic'}}" aria-label="{{localize 'NEONMARKET.Clinic.OpenClinic'}}"><i class="fa-solid fa-user-doctor"></i></button>
-      {{/if}}
+      {{#each venueLinks}}<button type="button" class="nm-icon-btn" data-action="openVenue" data-venue="{{key}}" data-tooltip="{{label}}" aria-label="{{label}}"><i class="{{icon}}"></i></button>{{/each}}
       {{#if isGM}}
       <button type="button" class="nm-icon-btn" data-action="configure" data-tooltip="{{localize 'NEONMARKET.UI.Configure'}}" aria-label="{{localize 'NEONMARKET.UI.Configure'}}"><i class="fa-solid fa-sliders"></i></button>
       {{/if}}

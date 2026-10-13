@@ -27,9 +27,9 @@ Then open your world and enable **Neon Market** in *Manage Modules*.
 ## Set up a shop (GM)
 
 1. Open shop settings from any of these:
-   - the **Shop** button in an actor sheet header,
-   - right-click the actor in the Actors sidebar, then **Shop settings**,
-   - the sliders button in the Token HUD.
+   - the **Neon Market** button in an actor sheet header, then **Store**,
+   - right-click the actor in the Actors sidebar, then **Neon Market settings** and **Store**,
+   - the sliders button in the Token HUD, then **Store**.
 2. **Identity:** tick *Open for business*, name the shop and clerk, pick clerk art (a tall
    transparent portrait works best) and write what the clerk says.
 3. **Look:** choose a theme. New shops start on **Night City chrome**, the look of
@@ -46,9 +46,11 @@ separate from the actor's own inventory and wallet.
 
 ## Open a shop
 
-- **Players:** select your token, walk it next to the shopkeeper and press **G**
+- **Players:** select your token, walk it next to an NPC shopkeeper and press **G**
   (change the key in *Configure Controls*; set the distance in module settings).
-- **GM:** Token HUD store button, or the bullhorn button to **show the shop on every player's screen**.
+- **GM, Token HUD:** one button opens what the actor offers: its clinic, else its tech shop, else its
+  store (each window links to the others). The sliders button opens the settings, and for stores the
+  bullhorn button **shows the shop on every player's screen**. Players don't get HUD buttons; they use **G**, which only reaches NPCs (actors no player owns), or a tile or macro you set up.
 - **Macro / API:**
 
 ```js
@@ -116,8 +118,8 @@ characters up and installs their cyberware, following the Core Rulebook's healin
 can be a clinic and a shop at once; the clinic window then has a button to its store, and the
 store has one back.
 
-**Set one up (GM):** the **Clinic** button in an actor sheet header, *Clinic settings* in the Actors
-sidebar's right-click menu, or the medical-bag button in the Token HUD. Tick *Open for patients*,
+**Set one up (GM):** the **Neon Market** button in an actor sheet header (or *Neon Market settings* in
+the Actors sidebar's right-click menu), then **Clinic**; or the sliders button in the Token HUD. Tick *Open for patients*,
 then on *Doctor and services*:
 
 - **Facility:** Mall, Clinic or Hospital. It decides which cyberware the place can install (a clinic
@@ -127,7 +129,7 @@ then on *Doctor and services*:
   Medtech abilities. 0 means the doctor can't do that.
 - **Services:** switch off anything this place doesn't offer.
 
-**Players** walk up and press **G**, or use the doctor button in the Token HUD, pick their character
+**Players** walk up and press **G**, pick their character
 as the patient, choose a procedure and book it. Every procedure shows its price and the doctor's
 chance of success first. Like trades, bookings go to the GM's client (so the Shop Terminal trick
 works here too), which rolls the doctor's check and applies the result.
@@ -162,6 +164,50 @@ api.configureClinic(actorOrUuid); // GM: clinic settings
 await api.getClinic(actorOrUuid); // read the clinic config
 ```
 
+## Tech shops
+
+![A tech shop](docs/tech.png)
+
+Any actor can also be a **tech shop**: a Tech who repairs, upgrades, fabricates and invents for
+customers, following the Maker role ability (CRB p.147) and the repair rules (p.140). An actor can be
+a tech shop, a clinic and a store at once; each window links to the others, and **G** opens the
+clinic first, then the tech shop, then the store.
+
+**Set one up (GM):** the **Neon Market** button in an actor sheet header (or *Neon Market settings* in
+the Actors sidebar's right-click menu), then **Tech shop**; or the sliders button in the Token HUD. Tick *Open for customers*,
+then on *Tech and services* enter the Tech's TECH + skill for each repair skill and their four Maker
+ranks (*Fill from this actor* reads them), and on *Blueprints* drag in what they can build.
+
+| Job | Tech's check | Price (default) | Effect |
+| --- | --- | --- | --- |
+| Repair | The item's repair skill + Field Expertise, DV by price category (9 to 29) | Labor by price category | Back to perfect: clears Neon At Home's Damaged, Destroyed and malfunction, restores armor SP and shield HP. |
+| Repair a vehicle | Land/Sea/Air Vehicle Tech + Field Expertise, DV9/13/17 by damage | 50 / 100 / 500eb | MMuton vehicle: SDP to full, plating SP, bulletproof glass, vehicle critical injuries cleared. |
+| Upgrade | Repair skill + Upgrade Expertise, DV by price category | Materials (the item's category) + labor | One per item, from the book's list. Lower Humanity Loss (rolls the 1d6), +1 slot, Excellent Quality, concealable and +1 SP are applied; Simplify halves later repair times; exotic and vehicle upgrades are recorded for the GM. |
+| Fabricate | Repair skill + Fabrication Expertise, DV by price category | Materials (one category lower) + labor | The item is made and handed over. |
+| Invent | Repair skill + Invention Expertise | Labor by the category the GM sets | The GM reads the pitch and sets a price category (Expensive or more), or turns it down. On a success it becomes a blueprint. |
+
+The skill for each item is the one Neon At Home's maintenance uses (Weaponstech for weapons,
+Cybertech for cyberware, and so on), including the GM's per-item override there. A failed job costs
+nothing by default: the Tech starts over, and the materials aren't used up (p.148). Labor isn't priced
+in the book, so the defaults are this module's; every fee is editable and 0 makes it free.
+
+**With [Neon At Home](https://github.com/choccoops/neonathome)**, the Repair tab lists every piece of
+the customer's gear it marks Damaged, Destroyed or malfunctioning (hidden damage stays hidden), and a
+repair sets it working again through Neon At Home's own API. Destroyed Beyond Repair can't be fixed.
+Without it, repairs cover armor and vehicles only.
+
+**With MMuton's Vehicle Actor Sheet**, the vehicles a customer's player owns show up for repair and
+upgrades, along with the damaged weapons and upgrades mounted on them. Land, sea or air comes from the
+pilot skills on the vehicle's seats.
+
+GM calls the module leaves to you: how long the work takes in-world (the card says), the effect of the
+upgrades it only records, and what an invented item actually does (it starts as a plain item at its price).
+
+```js
+api.openTech(actorOrUuid);      // open a tech shop for yourself
+api.configureTech(actorOrUuid); // GM: tech shop settings
+```
+
 ## Settings
 
 | Setting | Default | What it does |
@@ -169,7 +215,7 @@ await api.getClinic(actorOrUuid); // read the clinic config
 | Default sell rate | 50% | Share of market price shops pay; shops and items can override it. |
 | Players can sell to shops | On | Off makes every shop buy-only. |
 | GM approves every trade | Off | Player trades wait for a GM confirmation. |
-| Interaction range | 4 | Distance in scene units for the G key and HUD button. 0 = anywhere. |
+| Interaction range | 4 | How close a player must be for the G key, in scene units. 0 = anywhere. |
 | Chat receipts | Private | Public, GM + owners only, or none. |
 | Show price categories | On | Cheap, Everyday, Costly and so on, from the core book. |
 | Scene music while shopping | 20% | Client setting: playlist volume while a shop is open. |
@@ -196,6 +242,11 @@ renames one degrades to "no data" rather than breaking a trade. After a system u
 | Critical injuries | `criticalInjury` items: `system.quickFix` / `system.treatment` type and DVs, `system.location` | DVs read straight from the injury. |
 | Cyberware install | `installLocation`, `isFoundational`, `type`, `installItems()`, `loseHumanityValue()` | Same calls as `CPRActor.installCyberware`, without its dialog. |
 | Doctor's skills | Skill items by name; Medtech role abilities "Surgery Skill", "Medical Tech Skill" | Only for *Fill from this actor*. |
+| Tech's skills | Skill items by name; Tech role abilities "Field / Upgrade / Fabrication / Invention Expertise" | Only for *Fill from this actor*. |
+| Upgrades | `system.installedItems.slots`, `system.quality`, `system.concealable.concealable`, `system.bodyLocation.sp` / `headLocation.sp`, `system.humanityLoss.roll` / `static` | Changed by Maker upgrades. |
+| Armor damage | `system.bodyLocation.ablation`, `headLocation.ablation`, `shieldHitPoints`, `system.externalData.currentArmorBody/Head` | Reset by repairs. |
+| Neon At Home | `flags.cpr-neon-at-home.item` condition, malfunction, hidden, maint.kind; `api.setCondition()` | Repairs go through its API. |
+| MMuton's vehicles | Sheet class `mmutons-cyberpunk-red-vas.*`, `flags.mmutons-cyberpunk-red-vas.positions` (glassHp, skills), HP as SDP | Vehicle repairs. |
 
 ## Forward compatibility (Foundry v13+)
 

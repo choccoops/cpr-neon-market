@@ -3,6 +3,7 @@ import { Compat } from "../compat.js";
 import { CPR } from "../cpr-adapter.js";
 import { ShopAudio } from "../audio.js";
 import { ShopSocket } from "../socket.js";
+import { venueLinks, openVenue, closeOtherVenues } from "../venues.js";
 import {
   getShop, normalizeShop, buyPrice, basePrice, entryName, sellPrice, buysItem, shopFunds, tierFor, label, formatEb
 } from "../shop-data.js";
@@ -53,7 +54,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       checkout: ShopApp.#onCheckout,
       sell: ShopApp.#onSell,
       configure: ShopApp.#onConfigure,
-      openClinic: ShopApp.#onOpenClinic
+      openVenue: ShopApp.#onOpenVenue
     }
   };
 
@@ -70,11 +71,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static open(actor, options = {}) {
     if (!actor) return null;
-    // One full-screen window at a time: close any open clinic (reached through the API to avoid a circular import).
-    for (const app of game.modules.get(MODULE_ID).api?.apps?.ClinicApp?.instances.values() ?? []) app.close();
-    for (const [uuid, app] of this.instances) {
-      if (uuid !== actor.uuid) app.close();
-    }
+    closeOtherVenues(this.instances.get(actor.uuid));
     let app = this.instances.get(actor.uuid);
     if (app) {
       if (options.preview !== undefined) app.preview = options.preview;
@@ -153,7 +150,7 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
       isCharacter: shop.layout === "character",
       isGrid: shop.layout === "grid",
       isGM: game.user.isGM,
-      hasClinic: !this.preview && !!game.modules.get(MODULE_ID).api?.isClinic?.(this.shopActor),
+      venueLinks: this.preview ? [] : venueLinks(this.shopActor, "shop"),
       preview: this.preview,
       closedBanner: !shop.enabled && game.user.isGM && !this.preview,
       labels: {
@@ -629,10 +626,8 @@ export class ShopApp extends HandlebarsApplicationMixin(ApplicationV2) {
     game.modules.get(MODULE_ID).api.configure(this.shopActor);
   }
 
-  static #onOpenClinic() {
-    const actor = this.shopActor;
-    this.close();
-    game.modules.get(MODULE_ID).api.openClinic(actor);
+  static #onOpenVenue(event, target) {
+    openVenue(this.shopActor, target.dataset.venue);
   }
 
   async #trade(op, payload, onSuccess) {

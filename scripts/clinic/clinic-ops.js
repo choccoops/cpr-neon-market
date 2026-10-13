@@ -2,10 +2,10 @@ import { MODULE_ID } from "../constants.js";
 import { Compat } from "../compat.js";
 import { CPR } from "../cpr-adapter.js";
 import { ShopSocket } from "../socket.js";
-import { formatEb } from "../shop-data.js";
+import { ServiceRunner } from "../services/service-runner.js";
 import { getClinic, THERAPIES } from "./clinic-data.js";
 import {
-  hp, humanity, body, woundState, feeForDv, rollCheck, stabilizePlan, quickFixPlan, treatmentPlan,
+  hp, humanity, body, woundState, feeForDv, stabilizePlan, quickFixPlan, treatmentPlan,
   cryoPlan, therapyPlan, installPlan, installTargets, installLocation, humanityItems, injuries,
   THERAPY, THERAPY_NIGHTS
 } from "./clinic-rules.js";
@@ -15,9 +15,8 @@ const DAY = 86400;
 
 /**
  * Clinic procedures, run only on the active GM client (players can't write to the
- * clinic actor or roll for its doctor). A procedure is planned, priced and approved,
- * then the doctor rolls, the patient is charged and the result is applied. If applying
- * fails, the charge is refunded, so a patient never pays for something that didn't happen.
+ * clinic actor or roll for its doctor). Each procedure is planned here; ServiceRunner
+ * prices it, gets it approved, rolls for the doctor, charges the patient and applies it.
  */
 export class ClinicOps {
   static init() {
@@ -37,50 +36,22 @@ export class ClinicOps {
     if (!clinic.services[kind]) throw this.#error("NEONMARKET.Clinic.Error.NoService");
 
     const job = this.#plan(kind, clinic, patient, params);
-    const fee = Math.max(0, Math.round(job.fee));
-    if (fee > 0) {
-      if (!CPR.hasWealth(patient)) throw this.#error("NEONMARKET.Error.NoWealth", { name: patient.name });
-      const wealth = CPR.getWealth(patient);
-      if (wealth < fee) {
-        const err = this.#error("NEONMARKET.Error.NotEnoughFunds", { name: patient.name, total: formatEb(fee), wealth: formatEb(wealth) });
-        err.code = "noFunds";
-        throw err;
-      }
-    }
-
-    await this.#approve(user, clinic, patient, job, fee);
-
-    const check = job.plan ? await rollCheck(job.plan.base, job.plan.dv) : null;
-    const success = check ? check.success : true;
-    const charged = success || clinic.options.chargeOnFailure ? fee : 0;
-    const reason = game.i18n.format("NEONMARKET.Clinic.Ledger.Fee", { procedure: job.title, clinic: clinic.identity.name });
-
-    const undo = [];
-    let outcome;
-    try {
-      if (charged > 0) {
-        await CPR.changeWealth(patient, -charged, reason, user.name);
-        undo.push(() => CPR.changeWealth(patient, charged, game.i18n.localize("NEONMARKET.Ledger.Rollback"), user.name));
-        if (clinic.options.feesToActor && CPR.hasWealth(clinicActor)) {
-          const income = game.i18n.format("NEONMARKET.Clinic.Ledger.Income", { procedure: job.title, patient: patient.name });
-          await CPR.changeWealth(clinicActor, charged, income, user.name);
-          undo.push(() => CPR.changeWealth(clinicActor, -charged, game.i18n.localize("NEONMARKET.Ledger.Rollback"), user.name));
-        }
-      }
-      outcome = success ? await job.apply(user, check) : await (job.fail?.(user, check) ?? []);
-    } catch (err) {
-      for (const step of undo.reverse()) {
-        try {
-          await step();
-        } catch (e) {
-          console.error(`${MODULE_ID} | clinic rollback step failed`, e);
-        }
-      }
-      throw err;
-    }
-
-    await this.#card({ user, clinic, patient, job, check, success, charged, outcome });
-    return { success, charged, total: check?.total ?? null, balance: CPR.hasWealth(patient) ? CPR.getWealth(patient) : null };
+    if (job.plan) job.plan.label = game.i18n.localize(`NEONMARKET.Clinic.Skill.${job.plan.skill}`);
+    return ServiceRunner.run({
+      user,
+      customer: patient,
+      venueActor: clinicActor,
+      venue: {
+        name: clinic.identity.name,
+        staff: clinic.identity.doctor,
+        accent: clinic.identity.accent,
+        icon: "fa-solid fa-user-doctor",
+        chargeOnFailure: clinic.options.chargeOnFailure,
+        feesToActor: clinic.options.feesToActor,
+        labels: { customer: "NEONMARKET.Clinic.Card.Patient", staff: "NEONMARKET.Clinic.Card.Doctor" }
+      },
+      job
+    });
   }
 
   /* ---------------------------------------- */
@@ -270,54 +241,5 @@ export class ClinicOps {
 
   static #error(key, data) {
     return new Error(data ? game.i18n.format(key, data) : game.i18n.localize(key));
-  }
-
-  static async #approve(user, clinic, patient, job, fee) {
-    if (user.isGM || !game.settings.get(MODULE_ID, "requireApproval")) return;
-    const ok = await Compat.DialogV2.confirm({
-      classes: ["neon-market-dialog"],
-      window: { title: game.i18n.localize("NEONMARKET.Approval.Title") },
-      content: `<p>${game.i18n.format("NEONMARKET.Clinic.Approval", {
-        user: Handlebars.escapeExpression(user.name),
-        actor: Handlebars.escapeExpression(patient.name),
-        procedure: Handlebars.escapeExpression(job.title),
-        clinic: Handlebars.escapeExpression(clinic.identity.name),
-        total: formatEb(fee)
-      })}</p>`,
-      rejectClose: false
-    });
-    if (!ok) throw this.#error("NEONMARKET.Error.Denied");
-  }
-
-  static async #card({ user, clinic, patient, job, check, success, charged, outcome }) {
-    const mode = game.settings.get(MODULE_ID, "receiptMode");
-    const extraRolls = Array.isArray(outcome) ? [] : outcome?.rolls ?? [];
-    const lines = Array.isArray(outcome) ? outcome : outcome?.lines ?? [];
-    const content = await Compat.renderTemplate(`modules/${MODULE_ID}/templates/chat-clinic.hbs`, {
-      clinicName: clinic.identity.name,
-      doctor: clinic.identity.doctor,
-      accent: clinic.identity.accent,
-      procedure: job.title,
-      patient: patient.name,
-      check: check && {
-        skill: game.i18n.localize(`NEONMARKET.Clinic.Skill.${job.plan.skill}`),
-        base: check.base,
-        die: check.die,
-        crit: check.crit ? (check.crit > 0 ? `+${check.crit}` : String(check.crit)) : "",
-        total: check.total,
-        dv: check.dv
-      },
-      success,
-      lines,
-      fee: charged > 0 ? formatEb(charged) : game.i18n.localize("NEONMARKET.Clinic.NoCharge"),
-      balance: CPR.hasWealth(patient) ? formatEb(CPR.getWealth(patient)) : null
-    });
-    // Rolls ride along so Dice So Nice and the roll log see them; the card supplies the text.
-    const data = { content, speaker: ChatMessage.getSpeaker({ actor: patient }), rolls: [...(check?.rolls ?? []), ...extraRolls] };
-    if (mode === "private" || mode === "none") {
-      const owners = game.users.filter((u) => u.isGM || patient.testUserPermission(u, "OWNER")).map((u) => u.id);
-      data.whisper = [...new Set([...owners, user.id])];
-    }
-    await ChatMessage.create(data);
   }
 }

@@ -20,6 +20,9 @@ jobs:
           for f in $(find scripts -name "*.js"); do node --input-type=module --check < "$f"; done
           jq empty module.json lang/*.json
 
+      - name: Run tests
+        run: for f in tests/*.test.mjs; do node "$f" || exit 1; done
+
       - name: Stamp version and URLs into module.json
         run: |
           VERSION="${GITHUB_REF_NAME#v}"

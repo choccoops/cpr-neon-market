@@ -1302,9 +1302,38 @@
 .neon-market .nm-clinic-vitals .is-low dd { color: #ff6b6b; }
 .neon-market .layout-character .nm-clinic-footer { grid-template-columns: auto minmax(0, 1fr); }
 
+/* Tech shop: the clinic's layout, plus text fields */
+.neon-market .nm-tech-list { margin: 10px 0 0; padding: 6px 10px 6px 24px; border-left: 3px solid var(--nm-accent); background: color-mix(in srgb, var(--nm-accent) 6%, transparent); font-size: 13px; }
+.neon-market .nm-tech-text input,
+.neon-market .nm-tech-area textarea {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 4px;
+  background: transparent;
+  color: var(--nm-text);
+  border: 0;
+  border-bottom: 1px solid var(--nm-line);
+  border-radius: 0;
+  font: inherit;
+  box-shadow: none;
+}
+.neon-market .nm-tech-area { display: grid; gap: 4px; margin-top: 10px; }
+.neon-market .nm-tech-area span {
+  font-family: var(--nm-font-ui);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--nm-muted);
+}
+.neon-market .nm-tech-area textarea { height: auto; padding: 6px; border: 1px solid var(--nm-line); resize: vertical; }
+.neon-market :is(.nm-tech-text input, .nm-tech-area textarea):focus { outline: none; border-color: var(--nm-accent-2); }
+.neon-market.nm-tech-config .nm-items-table select { width: 180px; }
+.neon-market-receipt .nm-service-time { margin: 2px 0 0; font-size: 12px; color: var(--nc-dim); }
+
 /* Chat card */
-.neon-market-receipt .nm-clinic-patient { margin: 0 0 6px; font-size: 12px; color: var(--nc-dim); }
-.neon-market-receipt .nm-clinic-roll {
+.neon-market-receipt .nm-service-who { margin: 0 0 6px; font-size: 12px; color: var(--nc-dim); }
+.neon-market-receipt .nm-service-roll {
   display: flex;
   align-items: baseline;
   gap: 8px;
@@ -1315,21 +1344,21 @@
   font-size: 12px;
   letter-spacing: 0.06em;
 }
-.neon-market-receipt .nm-clinic-roll span { flex: 1; }
-.neon-market-receipt .nm-clinic-roll b { font-weight: 400; color: var(--nc-cyan); }
-.neon-market-receipt .nm-clinic-roll strong { font-size: 20px; font-weight: 400; color: #fff; }
-.neon-market-receipt .nm-clinic-roll em { font-style: normal; color: var(--nc-dim); }
-.neon-market-receipt .nm-clinic-verdict {
+.neon-market-receipt .nm-service-roll span { flex: 1; }
+.neon-market-receipt .nm-service-roll b { font-weight: 400; color: var(--nc-cyan); }
+.neon-market-receipt .nm-service-roll strong { font-size: 20px; font-weight: 400; color: #fff; }
+.neon-market-receipt .nm-service-roll em { font-style: normal; color: var(--nc-dim); }
+.neon-market-receipt .nm-service-verdict {
   margin: 6px 0 4px;
   font-family: var(--nc-display);
   font-size: 12px;
   letter-spacing: 0.26em;
   text-transform: uppercase;
 }
-.neon-market-receipt.is-success .nm-clinic-verdict { color: #39ff88; }
-.neon-market-receipt.is-failure .nm-clinic-verdict { color: #ff8a1f; }
+.neon-market-receipt.is-success .nm-service-verdict { color: #39ff88; }
+.neon-market-receipt.is-failure .nm-service-verdict { color: #ff8a1f; }
 /* Result lines are sentences, not prices: undo the receipt's price column style. */
-.neon-market-receipt.nm-clinic-card li span:last-child { color: var(--nc-text); font-family: inherit; letter-spacing: normal; white-space: normal; }
+.neon-market-receipt.nm-service-card li span:last-child { color: var(--nc-text); font-family: inherit; letter-spacing: normal; white-space: normal; }
 
 /* ==========================================================================
    Confirmation dialogs
@@ -1572,6 +1601,10 @@
 .neon-market .nm-drop { border-color: var(--nc-line-2); border-radius: 0; color: var(--nc-dim); opacity: 1; }
 .neon-market .nm-drop-big { font-family: var(--nc-display); letter-spacing: 0.16em; text-transform: uppercase; }
 .neon-market .nm-drop.drag-over { border-color: var(--nc-pink); color: var(--nc-text); }
+
+/* The store / clinic / tech shop chooser: one full-width button each */
+.neon-market-chooser .window-content :is(.form-footer, .dialog-buttons) { flex-direction: column; gap: 6px; }
+.neon-market-chooser .window-content :is(.form-footer, .dialog-buttons) button { width: 100%; justify-content: flex-start; padding: 0 14px; }
 
 /* Confirmation dialogs */
 .neon-market-dialog .window-content { background: var(--nc-bg); color: var(--nc-text); }

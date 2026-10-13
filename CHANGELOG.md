@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.4.0
+
+Tech shops: repairs, upgrades, fabrication and invention.
+
+- **Tech shops.** Any actor can be a Tech's shop, alongside a clinic and a store. Customers book jobs; the GM's client rolls the Tech's check (repair skill + Maker rank + 1d10 against the book's DV), charges labor and materials, applies the result and posts a card.
+- **Repairs** at the Core Rulebook's DVs by price category, or by damage for vehicles. With Neon At Home, Damaged, Destroyed and malfunctioning gear is listed and set working again through its API; armor gets its SP and shield HP back.
+- **MMuton's Vehicle Actor Sheet.** A customer's vehicles can be repaired (SDP, plating, bulletproof glass, vehicle critical injuries) and upgraded, and the damaged weapons and upgrades mounted on them repaired.
+- **Upgrades** from the book's list, one per item: lower Humanity Loss on cyberware, extra slots, Excellent Quality, concealable, +1 SP and Simplify are applied; the rest are recorded for the GM.
+- **Fabrication** from blueprints the GM drags in, at one price category lower in materials; **invention** pitches the GM prices, which become blueprints.
+- Failed jobs cost nothing by default, as the Tech starts over. Labor fees are editable; materials follow the book.
+- Store, clinic and tech shop windows link to each other. API: `openTech`, `configureTech`, `getTech`, `setTech`.
+- **Less clutter.** One Neon Market button in actor sheet headers, one entry in the Actors sidebar menu and one sliders button in the Token HUD, each asking whether you want the store, clinic or tech shop settings and showing which are open. The Token HUD has a single open button too, for the actor's clinic, tech shop or store, whichever it has first. The HUD buttons are now GM-only; players use the interact key, which only reaches NPC actors (none owned by a player).
+- Under the hood: clinics and tech shops share one booking runner and chat card; tests now live in the repo and run before every release.
+
 ## 1.3.0
 
 Ripperdoc clinics and hospitals.

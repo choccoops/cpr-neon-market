@@ -1,0 +1,193 @@
+<div class="nm-config-root">
+  <nav class="nm-config-tabs" role="tablist">
+    {{#each tabs}}
+    <button type="button" role="tab" class="{{#if active}}active{{/if}}" aria-selected="{{active}}" data-action="switchTab" data-tab="{{key}}">{{label}}</button>
+    {{/each}}
+  </nav>
+
+  <div class="nm-config-pane">
+    {{!-- ================= IDENTITY ================= --}}
+    {{#if tab.identity}}
+    <section class="nm-config-section">
+      <label class="nm-toggle">
+        <input type="checkbox" data-path="enabled" data-dtype="Boolean" {{#if d.enabled}}checked{{/if}}>
+        <span>{{localize "NEONMARKET.Tech.Config.Enabled"}}</span>
+      </label>
+      <p class="hint">{{localize "NEONMARKET.Tech.Config.EnabledHint"}}</p>
+
+      <div class="nm-config-grid two">
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Tech.Config.Name"}}</label>
+          <input type="text" data-path="identity.name" value="{{d.identity.name}}">
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Config.Subtitle"}}</label>
+          <input type="text" data-path="identity.subtitle" value="{{d.identity.subtitle}}">
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Tech.Config.Tech"}}</label>
+          <input type="text" data-path="identity.tech" value="{{d.identity.tech}}">
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Clinic.Config.Greeting"}}</label>
+          <input type="text" data-path="identity.greeting" value="{{d.identity.greeting}}">
+        </div>
+      </div>
+
+      <div class="nm-config-grid two">
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Tech.Config.Art"}}</label>
+          <div class="nm-file">
+            {{#if d.identity.art}}<img src="{{d.identity.art}}" alt="">{{/if}}
+            <input type="text" data-path="identity.art" value="{{d.identity.art}}">
+            <button type="button" data-action="pickFile" data-target="identity.art" data-type="image" aria-label="{{localize 'NEONMARKET.Config.Browse'}}"><i class="fa-solid fa-file-import"></i></button>
+          </div>
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Config.Background"}}</label>
+          <div class="nm-file">
+            {{#if d.identity.background}}<img src="{{d.identity.background}}" alt="">{{/if}}
+            <input type="text" data-path="identity.background" value="{{d.identity.background}}">
+            <button type="button" data-action="pickFile" data-target="identity.background" data-type="image" aria-label="{{localize 'NEONMARKET.Config.Browse'}}"><i class="fa-solid fa-file-import"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <h3>{{localize "NEONMARKET.Clinic.Config.LookHeading"}}</h3>
+      <div class="nm-config-grid three">
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Config.Theme"}}</label>
+          <select data-path="theme">
+            {{#each themes}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+          </select>
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Config.Accent"}}</label>
+          <input type="color" data-path="identity.accent" value="{{d.identity.accent}}">
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Config.Accent2"}}</label>
+          <input type="color" data-path="identity.accent2" value="{{d.identity.accent2}}">
+        </div>
+      </div>
+    </section>
+    {{/if}}
+
+    {{!-- ================= TECH AND SERVICES ================= --}}
+    {{#if tab.tech}}
+    <section class="nm-config-section">
+      <h3>{{localize "NEONMARKET.Tech.Config.SkillsHeading"}}
+        <button type="button" class="nm-link" data-action="readTech">{{localize "NEONMARKET.Clinic.Config.ReadDoctor"}}</button>
+      </h3>
+      <p class="hint">{{localize "NEONMARKET.Tech.Config.SkillsHint"}}</p>
+      <div class="nm-config-grid four">
+        {{#each skills}}
+        <div class="form-group stacked">
+          <label>{{label}}</label>
+          <input type="number" min="0" step="1" data-path="skills.{{key}}" data-dtype="Number" value="{{value}}">
+        </div>
+        {{/each}}
+      </div>
+
+      <h3>{{localize "NEONMARKET.Tech.Config.MakerHeading"}}</h3>
+      <p class="hint">{{localize "NEONMARKET.Tech.Config.MakerHint"}}</p>
+      <div class="nm-config-grid four">
+        {{#each maker}}
+        <div class="form-group stacked">
+          <label>{{label}}</label>
+          <input type="number" min="0" max="10" step="1" data-path="maker.{{key}}" data-dtype="Number" value="{{value}}">
+        </div>
+        {{/each}}
+      </div>
+
+      <h3>{{localize "NEONMARKET.Clinic.Config.ServicesHeading"}}</h3>
+      <div class="nm-config-grid four">
+        {{#each services}}
+        <label class="nm-toggle">
+          <input type="checkbox" data-path="services.{{key}}" data-dtype="Boolean" {{#if checked}}checked{{/if}}>
+          <span>{{label}}</span>
+        </label>
+        {{/each}}
+      </div>
+    </section>
+    {{/if}}
+
+    {{!-- ================= FEES ================= --}}
+    {{#if tab.fees}}
+    <section class="nm-config-section">
+      <p class="hint">{{localize "NEONMARKET.Tech.Config.FeesHint"}}</p>
+      <h3>{{localize "NEONMARKET.Tech.Config.LaborHeading"}}</h3>
+      <div class="nm-config-grid four">
+        {{#each labor}}
+        <div class="form-group stacked">
+          <label>{{label}}</label>
+          <input type="number" min="0" step="1" data-path="fees.labor.{{key}}" data-dtype="Number" value="{{value}}">
+        </div>
+        {{/each}}
+      </div>
+      <h3>{{localize "NEONMARKET.Tech.Config.VehicleHeading"}}</h3>
+      <div class="nm-config-grid three">
+        {{#each vehicle}}
+        <div class="form-group stacked">
+          <label>{{label}}</label>
+          <input type="number" min="0" step="1" data-path="fees.vehicle.{{key}}" data-dtype="Number" value="{{value}}">
+        </div>
+        {{/each}}
+      </div>
+    </section>
+    {{/if}}
+
+    {{!-- ================= BLUEPRINTS ================= --}}
+    {{#if tab.blueprints}}
+    <section class="nm-config-section">
+      <p class="hint">{{localize "NEONMARKET.Tech.Config.BlueprintsHint"}}</p>
+      {{#if blueprints.length}}
+      <table class="nm-items-table">
+        <thead><tr><th></th><th>{{localize "NEONMARKET.Tech.Config.Item"}}</th><th>{{localize "NEONMARKET.Tech.Config.Price"}}</th><th>{{localize "NEONMARKET.Tech.Config.Category"}}</th><th></th></tr></thead>
+        <tbody>
+          {{#each blueprints}}
+          <tr>
+            <td><img src="{{img}}" alt=""></td>
+            <td class="nm-name-cell">{{name}}<small>{{type}}{{#if inventedFor}} · {{localize "NEONMARKET.Tech.InventedFor" name=inventedFor}}{{/if}}</small></td>
+            <td class="nm-final">{{price}}</td>
+            <td>
+              <select data-path="blueprints.{{index}}.category">
+                {{#each categories}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+              </select>
+            </td>
+            <td class="nm-row-tools"><button type="button" data-action="removeBlueprint" data-index="{{index}}" aria-label="{{localize 'NEONMARKET.UI.Remove'}}"><i class="fa-solid fa-xmark"></i></button></td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+      <div class="nm-drop {{#unless blueprints.length}}nm-drop-big{{/unless}}" data-drop-blueprint>
+        <i class="fa-solid fa-file-circle-plus"></i> {{localize "NEONMARKET.Tech.Config.Drop"}}
+      </div>
+    </section>
+    {{/if}}
+
+    {{!-- ================= OPTIONS ================= --}}
+    {{#if tab.options}}
+    <section class="nm-config-section">
+      <label class="nm-toggle">
+        <input type="checkbox" data-path="options.chargeOnFailure" data-dtype="Boolean" {{#if d.options.chargeOnFailure}}checked{{/if}}>
+        <span>{{localize "NEONMARKET.Tech.Config.ChargeOnFailure"}}</span>
+      </label>
+      <p class="hint">{{localize "NEONMARKET.Tech.Config.ChargeOnFailureHint"}}</p>
+      <label class="nm-toggle">
+        <input type="checkbox" data-path="options.feesToActor" data-dtype="Boolean" {{#if d.options.feesToActor}}checked{{/if}}>
+        <span>{{localize "NEONMARKET.Clinic.Config.FeesToActor"}}</span>
+      </label>
+      <p class="hint">{{localize "NEONMARKET.Clinic.Config.FeesToActorHint"}}</p>
+    </section>
+    {{/if}}
+  </div>
+
+  <footer class="nm-config-footer">
+    <span class="nm-config-dirty {{#if dirty}}visible{{/if}}"><i class="fa-solid fa-circle"></i> {{localize "NEONMARKET.Config.UnsavedShort"}}</span>
+    <button type="button" data-action="preview"><i class="fa-solid fa-eye"></i> {{localize "NEONMARKET.Config.Preview"}}</button>
+    <button type="button" data-action="openTech"><i class="fa-solid fa-door-open"></i> {{localize "NEONMARKET.Clinic.Config.Open"}}</button>
+    <button type="button" class="nm-primary" data-action="save"><i class="fa-solid fa-floppy-disk"></i> {{localize "NEONMARKET.Config.Save"}}</button>
+  </footer>
+</div>

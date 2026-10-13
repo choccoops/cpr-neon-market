@@ -2,7 +2,7 @@
   "id": "cpr-neon-market",
   "title": "Neon Market: Themed Shops for Cyberpunk RED",
   "description": "Full-screen, themed shop encounters for the Cyberpunk RED - CORE system. Put a clerk on stage, stock the shelves by drag and drop, and run GM-mediated eurobuck trades with buy, sell and buyback.",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "authors": [
     {
       "name": "Neon Market contributors"
@@ -21,6 +21,18 @@
           "minimum": "0.92",
           "verified": "0.92.4"
         }
+      }
+    ],
+    "recommends": [
+      {
+        "id": "cpr-neon-at-home",
+        "type": "module",
+        "reason": "Tech shop repairs fix the Damaged, Destroyed and malfunctioning gear Neon At Home tracks."
+      },
+      {
+        "id": "mmutons-cyberpunk-red-vas",
+        "type": "module",
+        "reason": "Tech shops repair and upgrade vehicles on MMuton's Vehicle Actor Sheet: SDP, plating, bulletproof glass and vehicle critical injuries."
       }
     ]
   },

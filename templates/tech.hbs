@@ -1,0 +1,170 @@
+<div class="nm-shell {{rootClass}}" style="{{style}}">
+  <div class="nm-backdrop" aria-hidden="true"></div>
+  <div class="nm-fx" aria-hidden="true"></div>
+
+  {{#if closedBanner}}
+  <div class="nm-banner-closed">
+    <i class="fa-solid fa-lock"></i> {{localize "NEONMARKET.Tech.ClosedToPlayers"}}
+  </div>
+  {{/if}}
+  {{#if preview}}
+  <div class="nm-banner-closed nm-banner-preview">
+    <i class="fa-solid fa-eye"></i> {{localize "NEONMARKET.UI.PreviewBanner"}}
+  </div>
+  {{/if}}
+
+  <section class="nm-stage">
+    {{> "modules/cpr-neon-market/templates/parts/stage.hbs"}}
+  </section>
+
+  <section class="nm-counter">
+    <header class="nm-header">
+      <div class="nm-title">
+        <h1 class="nm-shop-name" data-text="{{identity.name}}">{{identity.name}}</h1>
+        {{#if identity.subtitle}}<p class="nm-subtitle">{{identity.subtitle}}</p>{{/if}}
+      </div>
+      <div class="nm-header-tools">
+        {{#each venueLinks}}<button type="button" class="nm-icon-btn" data-action="openVenue" data-venue="{{key}}" data-tooltip="{{label}}" aria-label="{{label}}"><i class="{{icon}}"></i></button>{{/each}}
+        {{#if isGM}}
+        <button type="button" class="nm-icon-btn" data-action="configure" data-tooltip="{{localize 'NEONMARKET.Tech.Configure'}}" aria-label="{{localize 'NEONMARKET.Tech.Configure'}}"><i class="fa-solid fa-sliders"></i></button>
+        {{/if}}
+        <button type="button" class="nm-icon-btn nm-close" data-action="close" aria-label="{{localize 'Close'}}"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </header>
+
+    <div class="nm-nav">
+      <div class="nm-modes" role="tablist">
+        {{#each modes}}
+        <button type="button" class="nm-mode {{#if active}}active{{/if}}" role="tab" aria-selected="{{active}}" data-action="setMode" data-mode="{{key}}">
+          <i class="{{icon}}"></i><span>{{label}}</span>
+        </button>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="nm-body">
+      <div class="nm-list" role="listbox" aria-label="{{identity.name}}">
+        {{#each rows}}
+        <button type="button" class="nm-item tier-everyday {{#if focused}}focused{{/if}} {{#if blocked}}sold-out{{/if}} {{#unless affordable}}unaffordable{{/unless}}"
+                role="option" aria-selected="{{focused}}" data-action="focus" data-key="{{key}}">
+          <span class="nm-item-img">{{#if img}}<img src="{{img}}" alt="" loading="lazy">{{else}}<i class="{{icon}}"></i>{{/if}}</span>
+          <span class="nm-item-main">
+            <span class="nm-item-name">{{name}}</span>
+            <span class="nm-item-meta">
+              {{#if sub}}<span>{{sub}}</span>{{/if}}
+              {{#if meta}}<span class="nm-clinic-check">{{meta}}</span>{{/if}}
+            </span>
+          </span>
+          <span class="nm-item-side">
+            <span class="nm-price">{{price}}</span>
+            {{#if chance}}<span class="nm-clinic-chance">{{chance}}</span>{{/if}}
+          </span>
+        </button>
+        {{else}}
+        <div class="nm-empty">{{emptyText}}</div>
+        {{/each}}
+      </div>
+
+      <aside class="nm-detail">
+        {{#if focus}}
+        <div class="nm-detail-body">
+          <div class="nm-detail-head">
+            <span class="nm-detail-img nm-clinic-icon">{{#if focus.img}}<img src="{{focus.img}}" alt="">{{else}}<i class="{{focus.icon}}"></i>{{/if}}</span>
+            <div>
+              <h2 class="nm-detail-name">{{focus.name}}</h2>
+              {{#if focus.sub}}<p class="nm-detail-type">{{focus.sub}}</p>{{/if}}
+            </div>
+          </div>
+          <p class="nm-desc">{{focus.rule}}</p>
+
+          {{#if focus.lines.length}}
+          <ul class="nm-tech-list">{{#each focus.lines}}<li>{{this}}</li>{{/each}}</ul>
+          {{/if}}
+
+          {{#if focus.damageOptions}}
+          <label class="nm-clinic-field">
+            <span>{{localize "NEONMARKET.Tech.DamageLabel"}}</span>
+            <select name="vehicleDamage">
+              {{#each focus.damageOptions}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+            </select>
+          </label>
+          {{/if}}
+
+          {{#if focus.upgradeOptions}}
+          <label class="nm-clinic-field">
+            <span>{{localize "NEONMARKET.Tech.UpgradeLabel"}}</span>
+            <select name="upgrade">
+              {{#each focus.upgradeOptions}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+            </select>
+          </label>
+          <p class="nm-hint">{{focus.upgradeHint}}</p>
+          {{#if focus.needsNote}}
+          <label class="nm-clinic-field nm-tech-text">
+            <span>{{localize "NEONMARKET.Tech.NoteLabel"}}</span>
+            <input type="text" name="note" value="{{focus.note}}" maxlength="300" placeholder="{{localize 'NEONMARKET.Tech.NotePlaceholder'}}">
+          </label>
+          {{/if}}
+          {{/if}}
+
+          {{#if focus.stats.length}}
+          <dl class="nm-stats">
+            {{#each focus.stats}}<div><dt>{{label}}</dt><dd>{{value}}</dd></div>{{/each}}
+          </dl>
+          {{/if}}
+          {{#if focus.inventedFor}}<p class="nm-hint">{{localize "NEONMARKET.Tech.InventedFor" name=focus.inventedFor}}</p>{{/if}}
+
+          {{#if focus.invention}}
+          <label class="nm-clinic-field nm-tech-text">
+            <span>{{localize "NEONMARKET.Tech.Invent.Name"}}</span>
+            <input type="text" name="invention-name" value="{{focus.invention.name}}" maxlength="80">
+          </label>
+          <label class="nm-clinic-field">
+            <span>{{localize "NEONMARKET.Tech.Invent.Kind"}}</span>
+            <select name="invention-kind">
+              {{#each focus.invention.kinds}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+            </select>
+          </label>
+          <label class="nm-tech-area">
+            <span>{{localize "NEONMARKET.Tech.Invent.Description"}}</span>
+            <textarea name="invention-description" rows="5" maxlength="2000" placeholder="{{localize 'NEONMARKET.Tech.Invent.Placeholder'}}">{{focus.invention.description}}</textarea>
+          </label>
+          {{/if}}
+
+          {{#if focus.check}}<p class="nm-clinic-line"><i class="fa-solid fa-dice-d10"></i> {{focus.check}}</p>{{/if}}
+          {{#if focus.timeText}}<p class="nm-clinic-line"><i class="fa-regular fa-clock"></i> {{focus.timeText}}</p>{{/if}}
+          {{#if focus.breakdown}}<p class="nm-clinic-line"><i class="fa-solid fa-coins"></i> {{focus.breakdown}}</p>{{/if}}
+          {{#if focus.blocked}}<p class="nm-clinic-blocked"><i class="fa-solid fa-triangle-exclamation"></i> {{focus.blocked}}</p>{{/if}}
+          {{#if focus.failNote}}<p class="nm-hint">{{focus.failNote}}</p>{{/if}}
+        </div>
+        <div class="nm-detail-actions">
+          <span class="nm-line-total">{{focus.price}}</span>
+          <button type="button" class="nm-cta" data-action="book" {{#unless focus.canBook}}disabled{{/unless}}>
+            <i class="fa-solid fa-screwdriver-wrench"></i> {{localize "NEONMARKET.Tech.Book"}}
+          </button>
+        </div>
+        {{else}}
+        <div class="nm-detail-empty">
+          <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i>
+          <p>{{localize "NEONMARKET.Tech.PickJob"}}</p>
+        </div>
+        {{/if}}
+      </aside>
+    </div>
+
+    <footer class="nm-footer nm-clinic-footer">
+      <div class="nm-buyer">
+        {{#if customer}}<img src="{{customer.img}}" alt="">{{/if}}
+        <div class="nm-buyer-info">
+          {{#if customers.length}}
+          <select name="customer" aria-label="{{localize 'NEONMARKET.Tech.Customer'}}">
+            {{#each customers}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+          </select>
+          {{else}}
+          <span class="nm-hint">{{localize "NEONMARKET.Tech.PickCustomer"}}</span>
+          {{/if}}
+          {{#if customer.wealth}}<span class="nm-balance">{{localize "NEONMARKET.Label.balance"}} <strong>{{customer.wealth}}</strong></span>{{/if}}
+        </div>
+      </div>
+    </footer>
+  </section>
+</div>

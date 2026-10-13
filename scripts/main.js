@@ -8,6 +8,10 @@ import { ShopConfigApp } from "./apps/shop-config.js";
 import { ClinicApp } from "./apps/clinic-app.js";
 import { ClinicConfigApp } from "./apps/clinic-config.js";
 import { ClinicOps } from "./clinic/clinic-ops.js";
+import { TechApp } from "./apps/tech-app.js";
+import { TechConfigApp } from "./apps/tech-config.js";
+import { TechOps } from "./tech/tech-ops.js";
+import { TECH_FLAG, getTech, saveTech, isTech } from "./tech/tech-data.js";
 import { getShop, saveShop, isShop } from "./shop-data.js";
 import { CLINIC_FLAG, getClinic, saveClinic, isClinic } from "./clinic/clinic-data.js";
 
@@ -84,7 +88,9 @@ Hooks.once("init", () => {
     `${TEMPLATE_PATH}/parts/cart.hbs`,
     `${TEMPLATE_PATH}/clinic.hbs`,
     `${TEMPLATE_PATH}/clinic-config.hbs`,
-    `${TEMPLATE_PATH}/chat-clinic.hbs`
+    `${TEMPLATE_PATH}/chat-service.hbs`,
+    `${TEMPLATE_PATH}/tech.hbs`,
+    `${TEMPLATE_PATH}/tech-config.hbs`
   ]);
 
   const api = {
@@ -106,7 +112,14 @@ Hooks.once("init", () => {
     getClinic: async (target) => getClinic(await resolveActor(target)),
     setClinic: async (target, data) => saveClinic(await resolveActor(target), data),
     isClinic,
-    apps: { ShopApp, ShopConfigApp, ClinicApp, ClinicConfigApp }
+    /** Open a tech shop (repairs, upgrades, fabrication, invention) for the current user. */
+    openTech: async (target, options) => TechApp.open(await resolveActor(target), options),
+    /** GM: open the tech shop editor. */
+    configureTech: async (target) => TechConfigApp.open(await resolveActor(target)),
+    getTech: async (target) => getTech(await resolveActor(target)),
+    setTech: async (target, data) => saveTech(await resolveActor(target), data),
+    isTech,
+    apps: { ShopApp, ShopConfigApp, ClinicApp, ClinicConfigApp, TechApp, TechConfigApp }
   };
   game.modules.get(MODULE_ID).api = api;
 });
@@ -115,6 +128,7 @@ Hooks.once("ready", () => {
   ShopSocket.init();
   Transactions.init();
   ClinicOps.init();
+  TechOps.init();
   Interaction.registerSocketEvents();
 
   if (game.system.id !== SYSTEM_ID && game.user.isGM) {
@@ -135,6 +149,9 @@ Hooks.on("updateActor", (actor, changes) => {
     || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.-=${CLINIC_FLAG}`);
   if (clinicChanged || walletChanged || foundry.utils.hasProperty(changes, "system.derivedStats")
     || foundry.utils.hasProperty(changes, "system.stats")) ClinicApp.refreshFor(actor);
+  // Tech shops show the customer's gear and vehicles: any change to them can matter.
+  if (foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.${TECH_FLAG}`) || walletChanged
+    || foundry.utils.hasProperty(changes, "system.derivedStats") || foundry.utils.hasProperty(changes, "flags")) TechApp.refreshFor(actor);
 });
 
 for (const hook of ["createItem", "updateItem", "deleteItem"]) {
@@ -142,6 +159,7 @@ for (const hook of ["createItem", "updateItem", "deleteItem"]) {
     if (item.parent instanceof Actor) {
       ShopApp.refreshFor(item.parent);
       ClinicApp.refreshFor(item.parent);
+      TechApp.refreshFor(item.parent);
     }
   });
 }
@@ -149,6 +167,7 @@ for (const hook of ["createItem", "updateItem", "deleteItem"]) {
 Hooks.on("canvasTearDown", () => {
   for (const app of ShopApp.instances.values()) app.close();
   for (const app of ClinicApp.instances.values()) app.close();
+  for (const app of TechApp.instances.values()) app.close();
 });
 
 async function resolveActor(target) {

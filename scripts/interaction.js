@@ -3,19 +3,10 @@ import { Compat } from "./compat.js";
 import { ShopSocket } from "./socket.js";
 import { isShop } from "./shop-data.js";
 import { ShopApp } from "./apps/shop-app.js";
-import { ShopConfigApp } from "./apps/shop-config.js";
-import { ClinicApp } from "./apps/clinic-app.js";
-import { ClinicConfigApp } from "./apps/clinic-config.js";
-import { isClinic } from "./clinic/clinic-data.js";
-
-/** Actors that open something when a player interacts with them. */
-const isVenue = (actor) => isShop(actor) || isClinic(actor);
-
-/** Open what an actor offers: its clinic (which links to its store) if it has one, else its shop. */
-const openVenue = (actor) => (isClinic(actor) ? ClinicApp.open(actor) : ShopApp.open(actor));
+import { VENUES, isVenue, primaryVenue, openVenue, chooseVenueSettings } from "./venues.js";
 
 /**
- * All the ways a shop or clinic gets opened:
+ * All the ways a shop, clinic or tech shop gets opened:
  *  - Token HUD button on a shopkeeper token (GM: settings + open; players: open when in range)
  *  - Actor sheet header button (GM)
  *  - Actor directory context menu (GM)
@@ -36,7 +27,7 @@ export const Interaction = {
           if (canvas?.tokens?.controlled?.length) ui.notifications.info(game.i18n.localize("NEONMARKET.UI.NoShopNearby"));
           return false;
         }
-        openVenue(token.actor);
+        openVenue(token.actor, primaryVenue(token.actor));
         return true;
       }
     });
@@ -45,20 +36,16 @@ export const Interaction = {
   registerHooks() {
     Hooks.on("renderTokenHUD", (hud, html) => this._onTokenHUD(hud, html));
 
+    // One header button opens a chooser for the store, clinic and tech shop settings,
+    // so Neon Market takes a single slot in a sheet header shared with other modules.
     // Application v1 sheets (Foundry v12 and the current CPR system sheets).
     Hooks.on("getActorSheetHeaderButtons", (sheet, buttons) => {
       if (!game.user.isGM) return;
       buttons.unshift({
-        label: game.i18n.localize("NEONMARKET.Clinic.SheetButton"),
-        class: "neon-market-clinic-config",
-        icon: "fa-solid fa-user-doctor",
-        onclick: () => ClinicConfigApp.open(sheet.actor)
-      });
-      buttons.unshift({
-        label: game.i18n.localize("NEONMARKET.UI.ShopButton"),
+        label: game.i18n.localize("NEONMARKET.Venue.SheetButton"),
         class: "neon-market-config",
-        icon: "fa-solid fa-store",
-        onclick: () => ShopConfigApp.open(sheet.actor)
+        icon: "fa-solid fa-city",
+        onclick: () => chooseVenueSettings(sheet.actor)
       });
     });
 
@@ -66,16 +53,10 @@ export const Interaction = {
     Hooks.on("getHeaderControlsActorSheetV2", (sheet, controls) => {
       if (!game.user.isGM) return;
       controls.unshift({
-        icon: "fa-solid fa-user-doctor",
-        label: "NEONMARKET.Clinic.SheetButton",
-        action: "neonMarketClinic",
-        onClick: () => ClinicConfigApp.open(sheet.document ?? sheet.actor)
-      });
-      controls.unshift({
-        icon: "fa-solid fa-store",
-        label: "NEONMARKET.UI.ShopButton",
+        icon: "fa-solid fa-city",
+        label: "NEONMARKET.Venue.SheetButton",
         action: "neonMarketConfigure",
-        onClick: () => ShopConfigApp.open(sheet.document ?? sheet.actor)
+        onClick: () => chooseVenueSettings(sheet.document ?? sheet.actor)
       });
     });
 
@@ -86,23 +67,12 @@ export const Interaction = {
     };
     const addContext = (_app, options) => {
       options.push({
-        name: "NEONMARKET.Clinic.ConfigureClinic",
-        icon: '<i class="fa-solid fa-user-doctor"></i>',
+        name: "NEONMARKET.Venue.MenuEntry",
+        icon: '<i class="fa-solid fa-city"></i>',
         condition: () => game.user.isGM,
         callback: (li) => {
           const actor = actorFrom(li);
-          if (actor) ClinicConfigApp.open(actor);
-        }
-      });
-      options.push({
-        name: "NEONMARKET.UI.ConfigureShop",
-        icon: '<i class="fa-solid fa-store"></i>',
-        condition: () => game.user.isGM,
-        callback: (li) => {
-          const el = Compat.element(li);
-          const id = el?.dataset.documentId ?? el?.dataset.entryId;
-          const actor = game.actors.get(id);
-          if (actor) ShopConfigApp.open(actor);
+          if (actor) chooseVenueSettings(actor);
         }
       });
     };
@@ -157,6 +127,8 @@ export const Interaction = {
     let bestDist = Infinity;
     for (const t of canvas.tokens.placeables) {
       if (t === from || !t.actor || !isVenue(t.actor)) continue;
+      // Players only reach NPC venues this way; trading between characters is a separate matter.
+      if (!game.user.isGM && t.actor.hasPlayerOwner) continue;
       if (!game.user.isGM && (t.document.hidden || !t.visible)) continue;
       const d = Compat.measureDistance(from.center, t.center);
       if (d < bestDist) {
@@ -175,9 +147,9 @@ export const Interaction = {
     const col = root?.querySelector(".col.right");
     if (!col) return;
 
+    // Players reach venues with the interact key; the HUD buttons are the GM's.
+    if (!game.user.isGM) return;
     const shopOn = isShop(actor);
-    const clinicOn = isClinic(actor);
-    if (!game.user.isGM && !shopOn && !clinicOn) return;
 
     const make = (icon, tooltip, handler, extraClass = "") => {
       const btn = document.createElement(Compat.generation >= 13 ? "button" : "div");
@@ -195,26 +167,11 @@ export const Interaction = {
       return btn;
     };
 
-    if (shopOn || game.user.isGM) {
-      make("fa-solid fa-store", "NEONMARKET.UI.OpenShop", () => {
-        if (!game.user.isGM && !this.inRange(this.actingToken(), token)) {
-          return ui.notifications.warn(game.i18n.localize("NEONMARKET.UI.TooFar"));
-        }
-        ShopApp.open(actor);
-      }, shopOn ? "" : "inactive");
-    }
-    if (clinicOn) {
-      make("fa-solid fa-user-doctor", "NEONMARKET.Clinic.OpenClinic", () => {
-        if (!game.user.isGM && !this.inRange(this.actingToken(), token)) {
-          return ui.notifications.warn(game.i18n.localize("NEONMARKET.UI.TooFar"));
-        }
-        ClinicApp.open(actor);
-      });
-    }
-    if (game.user.isGM) {
-      make("fa-solid fa-sliders", "NEONMARKET.UI.ConfigureShop", () => ShopConfigApp.open(actor));
-      make("fa-solid fa-briefcase-medical", "NEONMARKET.Clinic.ConfigureClinic", () => ClinicConfigApp.open(actor));
-      if (shopOn) make("fa-solid fa-bullhorn", "NEONMARKET.UI.Present", () => this.present(actor));
-    }
+    // One button opens what the actor offers (clinic, then tech shop, then store; each window
+    // links to the others), one picks which settings to edit, and stores can be shown to players.
+    const primary = primaryVenue(actor);
+    if (primary) make(VENUES[primary].icon, VENUES[primary].label, () => openVenue(actor, primary));
+    make("fa-solid fa-sliders", "NEONMARKET.Venue.MenuEntry", () => chooseVenueSettings(actor));
+    if (shopOn) make("fa-solid fa-bullhorn", "NEONMARKET.UI.Present", () => this.present(actor));
   }
 };

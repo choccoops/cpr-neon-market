@@ -308,7 +308,6 @@
       "Humanity": "Humanity",
       "Book": "Book",
       "Free": "Free",
-      "NoCharge": "No charge",
       "NoRoll": "No roll",
       "Days": "{n} days",
       "DaysLabel": "days",
@@ -328,7 +327,6 @@
       "InstallTarget": "Install into",
       "Confirm": "Book {procedure} for {actor}? Price: {price}.",
       "ConfirmOdds": "The doctor's chance of success: {chance}.",
-      "Approval": "{user} wants to book {procedure} for {actor} at {clinic} ({total}). Allow it?",
       "Tab": {
         "care": "Care",
         "recovery": "Recovery",
@@ -396,10 +394,7 @@
       },
       "Card": {
         "Patient": "Patient: {name}",
-        "Doctor": "Doctor: {name}",
-        "VsDv": "vs DV{dv}",
-        "Success": "Success",
-        "Failure": "Failed"
+        "Doctor": "Doctor: {name}"
       },
       "Result": {
         "Stabilized": "{name} is stabilized; natural healing can begin.",
@@ -417,8 +412,6 @@
         "Destroyed": "{item} was destroyed in the failed surgery."
       },
       "Ledger": {
-        "Fee": "{procedure} at {clinic}",
-        "Income": "{procedure} for {patient}",
         "Stabilized": "Stabilized",
         "Healed": "Healing at {clinic}",
         "Therapy": "Therapy at {clinic}"
@@ -496,6 +489,255 @@
         }
       },
       "PricePerDay": "{price} a day"
+    },
+    "Service": {
+      "NoCharge": "No charge",
+      "Approval": "{user} wants to book {job} for {actor} at {venue} ({total}). Allow it?",
+      "Ledger": {
+        "Fee": "{job} at {venue}",
+        "Income": "{job} for {customer}"
+      },
+      "Card": {
+        "VsDv": "vs DV{dv}",
+        "Success": "Success",
+        "Failure": "Failed"
+      }
+    },
+    "Venue": {
+      "clinic": "Open the clinic",
+      "tech": "Open the tech shop",
+      "shop": "Open the store",
+      "SheetButton": "Neon Market",
+      "MenuEntry": "Neon Market settings",
+      "ChooseTitle": "Neon Market: {name}",
+      "ChooseHint": "Which settings? An actor can be any mix of the three.",
+      "Settings": {
+        "shop": "Store",
+        "clinic": "Clinic",
+        "tech": "Tech shop"
+      },
+      "On": "open",
+      "Off": "off"
+    },
+    "Tech": {
+      "SheetButton": "Tech shop",
+      "ConfigureTech": "Tech shop settings",
+      "OpenTech": "Open tech shop",
+      "Configure": "Tech shop settings",
+      "ClosedToPlayers": "Tech shop closed: only GMs can see it",
+      "PreviewNoBooking": "This is a preview. Save and open the tech shop to book jobs.",
+      "PickCustomer": "Pick a customer: select your token or set your character.",
+      "PickJob": "Pick a job to see the price and the Tech's odds.",
+      "Customer": "Customer",
+      "Book": "Book",
+      "Slogan": "Tech",
+      "CheckMeta": "{skill} vs DV{dv}",
+      "CheckLine": "Tech's {skill} {base} + 1d10 vs DV{dv}: {chance} chance",
+      "Breakdown": "Materials {materials} + labor {labor}",
+      "FailCharged": "Labor is charged even if the job fails. Materials are only paid for when it works.",
+      "FailFree": "If the job fails you pay nothing: the Tech starts over, and the materials aren't used up.",
+      "Confirm": "Book {job} for {actor}? Price: {price}.",
+      "ConfirmInvent": "Pitch {job} for {actor}? The GM decides whether it's possible and how much it costs.",
+      "UpgradeCount": "{n} upgrades possible",
+      "UpgradeLabel": "Upgrade",
+      "DamageLabel": "Damage",
+      "NoteLabel": "What it does",
+      "NotePlaceholder": "Describe the upgrade for the GM",
+      "InventedFor": "invented for {name}",
+      "Sdp": "SDP {value}/{max}",
+      "Tab": {
+        "repair": "Repair",
+        "upgrade": "Upgrade",
+        "fabricate": "Fabricate",
+        "invent": "Invent"
+      },
+      "Empty": {
+        "repair": "Nothing needs fixing.",
+        "repairNoNah": "Nothing needs fixing. Neon At Home tracks Damaged and Destroyed gear; without it, only ablated armor and VAS vehicles show here.",
+        "upgrade": "Nothing here can take an upgrade.",
+        "fabricate": "No blueprints yet. The GM adds them in the tech shop settings, and successful inventions land here.",
+        "invent": ""
+      },
+      "Service": {
+        "repair": "Repair",
+        "upgrade": "Upgrade",
+        "fabricate": "Fabricate",
+        "invent": "Invent"
+      },
+      "Skill": {
+        "basicTech": "Basic Tech",
+        "cybertech": "Cybertech",
+        "electronics": "Electronics/Security Tech",
+        "weaponstech": "Weaponstech",
+        "landVehicle": "Land Vehicle Tech",
+        "seaVehicle": "Sea Vehicle Tech",
+        "airVehicle": "Air Vehicle Tech"
+      },
+      "Maker": {
+        "field": "Field Expertise",
+        "upgrade": "Upgrade Expertise",
+        "fabrication": "Fabrication Expertise",
+        "invention": "Invention Expertise"
+      },
+      "Kind": {
+        "gear": "Gear",
+        "electronics": "Electronics",
+        "weapon": "Weapon",
+        "armor": "Armor",
+        "cyberware": "Cyberware",
+        "cyberdeck": "Cyberdeck",
+        "vehicleLand": "Land vehicle",
+        "vehicleSea": "Sea vehicle",
+        "vehicleAir": "Air vehicle",
+        "drone": "Drone"
+      },
+      "Condition": {
+        "damaged": "Damaged",
+        "destroyed": "Destroyed",
+        "dbr": "Destroyed Beyond Repair",
+        "malfunction": "Malfunctioning",
+        "ablation": "SP ablated by {n}",
+        "shield": "Shield down {n} HP",
+        "plating": "{item} ablated",
+        "glass": "{n} bulletproof glass damaged"
+      },
+      "Damage": {
+        "minor": "Minor damage",
+        "major": "Major damage",
+        "destroyed": "Destroyed"
+      },
+      "Time": {
+        "1h": "1 hour",
+        "3h": "3 hours",
+        "6h": "6 hours",
+        "1d": "1 day",
+        "1w": "1 week",
+        "2w": "2 weeks",
+        "1mo": "1 month",
+        "months": "{n} months",
+        "Halved": "half of {time} (simplified)"
+      },
+      "Upgrade": {
+        "humanity": "Lower Humanity Loss by 1d6",
+        "slot": "One more slot",
+        "simplify": "Simplify (halve repair time)",
+        "conceal": "Make concealable",
+        "quality": "Excellent Quality",
+        "sp": "+1 SP",
+        "exoticSlot": "Attachment slot (Exotic Weapon)",
+        "exoticAmmo": "Fire a non-basic ammo (Exotic Weapon)",
+        "vehicle": "Nomad vehicle upgrade",
+        "invented": "Invented upgrade"
+      },
+      "UpgradeHint": {
+        "humanity": "For cyberware with 2d6 or more Humanity Loss, before it's installed. The 1d6 is rolled now and taken off its Humanity Loss.",
+        "slot": "One more option, attachment or program slot.",
+        "simplify": "Future full repairs take half as long.",
+        "conceal": "A one-handed weapon becomes concealable.",
+        "quality": "A standard weapon becomes Excellent Quality.",
+        "sp": "+1 SP to each location that has SP.",
+        "exoticSlot": "Recorded on the weapon for the GM to apply.",
+        "exoticAmmo": "Recorded on the weapon for the GM to apply. Say which ammunition.",
+        "vehicle": "An upgrade a Nomad could fit at Moto Rank 1. Recorded on the vehicle for the GM to apply; say which one.",
+        "invented": "An upgrade this Tech invented. Recorded on the item for the GM to apply; describe it."
+      },
+      "Rule": {
+        "repair": "A full repair back to perfect condition, at the item's price category DV with the skill that fixes it, plus the Tech's Field Expertise (CRB pp.140, 147). Clears Neon At Home's Damaged, Destroyed and malfunctions, and restores armor SP.",
+        "vehicle": "A full repair of the vehicle: SDP back to full, plating SP restored, bulletproof glass replaced and its critical injuries fixed (CRB p.140).",
+        "upgrade": "Upgrade Expertise: one upgrade per item, at the item's price category DV. Materials cost the item's price category; vehicles count as Very Expensive (CRB p.148).",
+        "fabricate": "Fabrication Expertise: built from a blueprint. Materials cost one price category less than the item (CRB p.148).",
+        "invent": "Invention Expertise: pitch an idea. The GM decides whether it works and sets its price category (Expensive or more), which sets the DV and the Tech's fee. On a success it becomes a blueprint you can have fabricated (CRB p.148)."
+      },
+      "Invent": {
+        "Row": "New invention",
+        "RowSub": "Pitch an idea to the Tech",
+        "GmPrices": "GM sets the price",
+        "Name": "Name",
+        "Kind": "Kind",
+        "Description": "What it does",
+        "Placeholder": "How it works, what it's built from and what it does. The GM reads this.",
+        "GmTitle": "Invention pitch",
+        "GmAsk": "{user} pitches an invention for {actor} to {tech}. If it's workable, set its price category; that sets the DV and the fee.",
+        "Category": "Price category",
+        "Approve": "Workable",
+        "Deny": "Not possible"
+      },
+      "Speech": {
+        "Success": "Good as new. Better, maybe.",
+        "Failure": "Didn't take. I'll have another go at it.",
+        "NoFunds": "Parts aren't free, choom."
+      },
+      "Card": {
+        "Customer": "Customer: {name}",
+        "Tech": "Tech: {name}"
+      },
+      "Ledger": {
+        "Repaired": "Repaired at {shop}"
+      },
+      "Result": {
+        "Working": "{item} works again.",
+        "ArmorRestored": "{item}: SP fully restored.",
+        "Sdp": "{name} is back to {max} SDP.",
+        "Plating": "{name}'s armor plating is restored.",
+        "Glass": "Bulletproof glass replaced.",
+        "VehicleInjuries": "Fixed: {list}.",
+        "Humanity": "{item}: Humanity Loss lowered by {n}, now {formula}.",
+        "Slot": "{item} now has {n} slots.",
+        "Conceal": "{item} is now concealable.",
+        "Quality": "{item} is now Excellent Quality.",
+        "Sp": "{item}: +1 SP.",
+        "Simplify": "{item} is simplified: full repairs take half as long.",
+        "Noted": "{item}: {note} (GM: apply this upgrade).",
+        "Fabricated": "{item} is built and handed to {name}.",
+        "Invented": "{item} works. It's now a blueprint at this shop."
+      },
+      "Error": {
+        "Closed": "This tech shop is closed.",
+        "NoService": "This tech shop doesn't do that.",
+        "NothingToRepair": "That doesn't need repairing.",
+        "BeyondRepair": "{item} is Destroyed Beyond Repair.",
+        "NoSkill": "The Tech doesn't have the skill for that.",
+        "NothingToUpgrade": "That item is gone.",
+        "CantUpgrade": "{item} can't take that upgrade (each item takes one).",
+        "NeedNote": "Describe the upgrade for the GM.",
+        "NoBlueprint": "That blueprint is gone.",
+        "NeedIdea": "Give the invention a name and describe it."
+      },
+      "Default": {
+        "Name": "Tech shop",
+        "Subtitle": "Fixed, upgraded, built to order",
+        "Greeting": "What did you break this time?"
+      },
+      "Config": {
+        "Title": "Tech shop settings",
+        "Tab": {
+          "identity": "Identity",
+          "tech": "Tech and services",
+          "fees": "Fees",
+          "blueprints": "Blueprints",
+          "options": "Options"
+        },
+        "Enabled": "Open for customers",
+        "EnabledHint": "Players can only use a tech shop that is open. An actor can be a tech shop, a clinic and a store at once.",
+        "Name": "Shop name",
+        "Tech": "Tech's name",
+        "Art": "Tech art",
+        "SkillsHeading": "The Tech's skills",
+        "SkillsHint": "TECH + skill for each repair skill, before Maker ranks and the d10. 0 means the Tech can't. Fill from this actor reads TECH, the skills and the Tech role's Maker ranks.",
+        "MakerHeading": "Maker",
+        "MakerHint": "Each specialty's rank adds to its checks: Field Expertise to repairs, the others to upgrades, fabrication and invention (CRB p.147).",
+        "FeesHint": "The rulebook doesn't price a Tech's time; these are this module's defaults. Materials for upgrades and fabrication come from the rulebook and are added on top. Set labor to 0 for free work.",
+        "LaborHeading": "Labor by price category",
+        "VehicleHeading": "Vehicle repairs",
+        "BlueprintsHint": "What this Tech can fabricate. Drag items or item folders here. Successful inventions are added too. The price category sets the DV and the materials; override it for items priced oddly.",
+        "Item": "Item",
+        "Price": "Price",
+        "Category": "Price category",
+        "CategoryAuto": "By price ({cat})",
+        "Drop": "Drop items or folders here",
+        "ChargeOnFailure": "Charge labor for failed jobs",
+        "ChargeOnFailureHint": "Off: a failed job costs nothing and can be booked again, as the Tech starts over (CRB p.148). Materials are never charged for a failed job."
+      }
     }
   }
 }
