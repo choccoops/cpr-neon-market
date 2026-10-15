@@ -137,6 +137,88 @@
     </section>
     {{/if}}
 
+    {{!-- ================= TECH UPGRADES ================= --}}
+    {{#if tab.tups}}
+    <section class="nm-config-section">
+      <p class="hint">{{localize "NEONMARKET.Tup.Config.Hint"}}</p>
+
+      <h3>{{localize "NEONMARKET.Tup.Config.GeneratorHeading"}}</h3>
+      <p class="hint">{{localize "NEONMARKET.Tup.Config.GeneratorHint"}}</p>
+      <div class="nm-config-grid three">
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Tup.Config.Count"}}</label>
+          <input type="number" min="1" max="12" step="1" data-path="generator.count" data-dtype="Number" value="{{d.generator.count}}">
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Tup.Config.MaxHeat"}}</label>
+          <select data-path="generator.maxHeat">
+            {{#each maxHeats}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+          </select>
+        </div>
+        <div class="nm-tup-roll">
+          <button type="button" data-action="rollTups"><i class="fa-solid fa-dice-d10"></i> {{localize "NEONMARKET.Tup.Config.Roll"}}</button>
+          <button type="button" data-action="rollTups" data-replace="true"><i class="fa-solid fa-rotate"></i> {{localize "NEONMARKET.Tup.Config.Reroll"}}</button>
+        </div>
+      </div>
+
+      <h3>{{localize "NEONMARKET.Tup.Config.PricingHeading"}}</h3>
+      <div class="nm-config-grid three">
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Tup.Config.LaborPercent"}}</label>
+          <input type="number" min="0" max="500" step="5" data-path="tupFees.laborPercent" data-dtype="Number" value="{{d.tupFees.laborPercent}}">
+        </div>
+        <div class="form-group stacked">
+          <label>{{localize "NEONMARKET.Tup.Config.Minimum"}}</label>
+          <input type="number" min="0" step="1" data-path="tupFees.minimum" data-dtype="Number" value="{{d.tupFees.minimum}}">
+        </div>
+        <label class="nm-toggle">
+          <input type="checkbox" data-path="options.tupAutoSuccess" data-dtype="Boolean" {{#if d.options.tupAutoSuccess}}checked{{/if}}>
+          <span>{{localize "NEONMARKET.Tup.Config.AutoSuccess"}}</span>
+        </label>
+      </div>
+      <p class="hint">{{localize "NEONMARKET.Tup.Config.PricingHint"}}</p>
+
+      <h3>{{localize "NEONMARKET.Tup.Config.StockHeading"}}
+        <button type="button" class="nm-link" data-action="addTup">{{localize "NEONMARKET.Tup.Config.Add"}}</button>
+      </h3>
+      {{#each tups}}
+      <div class="nm-tup-edit">
+        <div class="nm-tup-edit-head">
+          <input type="text" data-path="tups.{{index}}.name" value="{{name}}" aria-label="{{localize 'NEONMARKET.Tup.Config.Name'}}">
+          <span class="nm-tup-source">{{sourceLabel}}</span>
+          {{#if exclusive}}<button type="button" class="nm-link" data-action="shareTup" data-index="{{index}}" data-tooltip="{{localize 'NEONMARKET.Tup.Config.ShareHint'}}"><i class="fa-solid fa-lock"></i> {{exclusive}}</button>{{/if}}
+          <button type="button" class="nm-tup-remove" data-action="removeTup" data-index="{{index}}" aria-label="{{localize 'NEONMARKET.UI.Remove'}}"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="nm-config-grid four">
+          <div class="form-group stacked">
+            <label>{{localize "NEONMARKET.Tup.HeatLabel"}}</label>
+            <select data-path="tups.{{index}}.heat">{{#each heats}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+          </div>
+          <div class="form-group stacked">
+            <label>{{localize "NEONMARKET.Tup.FitsLabel"}}</label>
+            <select data-path="tups.{{index}}.fits">{{#each fitsList}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+          </div>
+          <div class="form-group stacked">
+            <label>{{localize "NEONMARKET.Tup.Config.Cost2"}}</label>
+            <input type="number" min="0" step="1" data-path="tups.{{index}}.cost" data-dtype="Number" value="{{cost}}">
+          </div>
+          <div class="form-group stacked">
+            <label>{{localize "NEONMARKET.Tup.Config.Dv"}}</label>
+            <input type="number" min="0" step="1" data-path="tups.{{index}}.dv" data-dtype="Number" value="{{dv}}">
+          </div>
+        </div>
+        <textarea data-path="tups.{{index}}.effect" rows="2" aria-label="{{localize 'NEONMARKET.Tup.Config.Effect'}}" placeholder="{{localize 'NEONMARKET.Tup.Config.Effect'}}">{{effect}}</textarea>
+        <div class="nm-tup-sells">
+          <label class="nm-toggle"><input type="checkbox" data-path="tups.{{index}}.install" data-dtype="Boolean" {{#if install}}checked{{/if}}><span>{{localize "NEONMARKET.Tup.Mode.install"}}</span></label>
+          <label class="nm-toggle"><input type="checkbox" data-path="tups.{{index}}.kit" data-dtype="Boolean" {{#if kit}}checked{{/if}}><span>{{localize "NEONMARKET.Tup.Mode.kit"}}</span></label>
+        </div>
+      </div>
+      {{else}}
+      <p class="nm-empty-note">{{localize "NEONMARKET.Tup.Config.Empty"}}</p>
+      {{/each}}
+    </section>
+    {{/if}}
+
     {{!-- ================= BLUEPRINTS ================= --}}
     {{#if tab.blueprints}}
     <section class="nm-config-section">

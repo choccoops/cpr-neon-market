@@ -184,12 +184,39 @@ ranks (*Fill from this actor* reads them), and on *Blueprints* drag in what they
 | Repair a vehicle | Land/Sea/Air Vehicle Tech + Field Expertise, DV9/13/17 by damage | 50 / 100 / 500eb | MMuton vehicle: SDP to full, plating SP, bulletproof glass, vehicle critical injuries cleared. |
 | Upgrade | Repair skill + Upgrade Expertise, DV by price category | Materials (the item's category) + labor | One per item, from the book's list. Lower Humanity Loss (rolls the 1d6), +1 slot, Excellent Quality, concealable and +1 SP are applied; Simplify halves later repair times; exotic and vehicle upgrades are recorded for the GM. |
 | Fabricate | Repair skill + Fabrication Expertise, DV by price category | Materials (one category lower) + labor | The item is made and handed over. |
-| Invent | Repair skill + Invention Expertise | Labor by the category the GM sets | The GM reads the pitch and sets a price category (Expensive or more), or turns it down. On a success it becomes a blueprint. |
+| Install a Tech Upgrade | None by default (the Tech has done it before); optionally repair skill + Upgrade Expertise vs the upgrade's DV | Cost #1 (the item's category) + Cost #2 (the upgrade's heat) + 50% labor | The upgrade is recorded as the item's one upgrade and written into its description for the GM to apply. |
+| Sell a Tech Upgrade kit | None | Cost #2 | A kit item for your crew's Tech to install. Bring it back and this Tech installs it for Cost #1 + labor. |
+| Invent | Repair skill + Invention Expertise | Labor by the category the GM sets | The GM reads the pitch and sets a price category (Expensive or more), or turns it down. On a success it becomes a blueprint. Pitch an *upgrade* and the GM sets its heat and what it goes in instead; on a success it goes on sale here, for that customer only until the GM shares it. |
 
 The skill for each item is the one Neon At Home's maintenance uses (Weaponstech for weapons,
 Cybertech for cyberware, and so on), including the GM's per-item override there. A failed job costs
 nothing by default: the Tech starts over, and the materials aren't used up (p.148). Labor isn't priced
 in the book, so the defaults are this module's; every fee is editable and 0 makes it free.
+
+### Invented Tech Upgrades
+
+Following the *Invented Tech Upgrades* DLC, a Tech can sell upgrades they've already invented, so
+crews don't need their own Tech to invent them. On the editor's **Tech Upgrades** tab:
+
+- **Roll stock** stocks a few ready-made upgrades. Each pick rolls a d10 for heat (1-3 Mild, 4-6
+  Medium, 7-8 Hot, 9 Extra Hot, 10 Diablo), capped at the hottest the shop carries, then picks an
+  upgrade of that heat from the module's own table of 29. **Reroll** swaps the rolled stock and keeps
+  anything you added or a customer invented. Results are whispered to the GM.
+- **Heat** sets Cost #2 and the DV from the DLC's thermometer: Mild 100eb (DV17), Medium 500eb (DV21),
+  Hot 1,000eb (DV24), Extra Hot 5,000eb (DV29), Diablo 10,000eb (DV29). Both can be changed per upgrade.
+- **Add an upgrade** for your own, or for the DLC's examples: name, heat, what it goes in, and what it
+  does. Each can be sold installed, as a kit, or both.
+- Labor is 50% of Cost #1 + Cost #2, as the DLC suggests, with an optional minimum.
+
+Customers find them on the shop's **Tech Upgrades** tab, choose to have one installed (and in which of
+their items) or buy the kit. Kits a customer carries show up there too, to be installed for Cost #1
+and labor. The module records an upgrade's effect but doesn't apply it: the GM does, as with other
+recorded upgrades.
+
+```js
+// GM: restock a tech shop, e.g. from a weekly macro. replace: true swaps out earlier rolled stock.
+game.modules.get("cpr-neon-market").api.rollTechUpgrades("Actor.xxxx", { count: 3, replace: true });
+```
 
 **With [Neon At Home](https://github.com/choccoops/neonathome)**, the Repair tab lists every piece of
 the customer's gear it marks Damaged, Destroyed or malfunctioning (hidden damage stays hidden), and a

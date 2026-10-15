@@ -548,6 +548,7 @@
       "Tab": {
         "repair": "Repair",
         "upgrade": "Upgrade",
+        "tups": "Tech Upgrades",
         "fabricate": "Fabricate",
         "invent": "Invent"
       },
@@ -556,11 +557,13 @@
         "repairNoNah": "Nothing needs fixing. Neon At Home tracks Damaged and Destroyed gear; without it, only ablated armor and VAS vehicles show here.",
         "upgrade": "Nothing here can take an upgrade.",
         "fabricate": "No blueprints yet. The GM adds them in the tech shop settings, and successful inventions land here.",
-        "invent": ""
+        "invent": "",
+        "tups": "This Tech has no upgrades for sale right now."
       },
       "Service": {
         "repair": "Repair",
         "upgrade": "Upgrade",
+        "tups": "Sell Tech Upgrades",
         "fabricate": "Fabricate",
         "invent": "Invent"
       },
@@ -589,7 +592,8 @@
         "vehicleLand": "Land vehicle",
         "vehicleSea": "Sea vehicle",
         "vehicleAir": "Air vehicle",
-        "drone": "Drone"
+        "drone": "Drone",
+        "upgrade": "Upgrade for existing gear (TUp)"
       },
       "Condition": {
         "damaged": "Damaged",
@@ -646,7 +650,9 @@
         "vehicle": "A full repair of the vehicle: SDP back to full, plating SP restored, bulletproof glass replaced and its critical injuries fixed (CRB p.140).",
         "upgrade": "Upgrade Expertise: one upgrade per item, at the item's price category DV. Materials cost the item's price category; vehicles count as Very Expensive (CRB p.148).",
         "fabricate": "Fabrication Expertise: built from a blueprint. Materials cost one price category less than the item (CRB p.148).",
-        "invent": "Invention Expertise: pitch an idea. The GM decides whether it works and sets its price category (Expensive or more), which sets the DV and the Tech's fee. On a success it becomes a blueprint you can have fabricated (CRB p.148)."
+        "invent": "Invention Expertise: pitch an idea, a new item or an upgrade for existing gear. The GM decides whether it works and sets its price category or heat, which sets the DV and the Tech's fee. On a success a new item becomes a blueprint you can have fabricated, and an upgrade goes on sale here (CRB p.148).",
+        "tupInstall": "An Invented Tech Upgrade, installed by this Tech. You pay Cost #1 (the materials of any upgrade: the item's price category, vehicles as Very Expensive), Cost #2 (the invention's own materials) and labor. It's the item's one upgrade (CRB p.148, Invented Tech Upgrades DLC).",
+        "tupKit": "A materials kit: pay Cost #2 now and take it home. Your crew's Tech installs it with an Upgrade check at its DV, paying Cost #1, and after one success they can install it again in other items (Invented Tech Upgrades DLC)."
       },
       "Invent": {
         "Row": "New invention",
@@ -714,6 +720,7 @@
           "identity": "Identity",
           "tech": "Tech and services",
           "fees": "Fees",
+          "tups": "Tech Upgrades",
           "blueprints": "Blueprints",
           "options": "Options"
         },
@@ -737,6 +744,212 @@
         "Drop": "Drop items or folders here",
         "ChargeOnFailure": "Charge labor for failed jobs",
         "ChargeOnFailureHint": "Off: a failed job costs nothing and can be booked again, as the Tech starts over (CRB p.148). Materials are never charged for a failed job."
+      }
+    },
+    "Tup": {
+      "Heat": {
+        "mild": "Mild",
+        "medium": "Medium",
+        "hot": "Hot",
+        "extraHot": "Extra Hot",
+        "diablo": "Diablo"
+      },
+      "Fits": {
+        "any": "Any gear",
+        "weapon": "Weapon",
+        "melee": "Melee weapon",
+        "ranged": "Ranged weapon",
+        "armor": "Armor",
+        "cyberware": "Cyberware",
+        "cyberlimb": "Cyberarm or cyberleg",
+        "cybereye": "Cybereye",
+        "cyberdeck": "Cyberdeck",
+        "vehicle": "Vehicle",
+        "electronics": "Electronics"
+      },
+      "Mode": {
+        "install": "Install it here",
+        "kit": "Sell the materials kit"
+      },
+      "Source": {
+        "rolled": "Rolled stock",
+        "custom": "Added by the GM",
+        "invented": "Invented here"
+      },
+      "ModeLabel": "How",
+      "TargetLabel": "Install in",
+      "HeatLabel": "Heat",
+      "FitsLabel": "Goes in",
+      "HeatLine": "{heat} · Cost #2 {cost} · DV{dv}",
+      "Meta": "Upgrade DV{dv}",
+      "Exclusive": "only for {name}",
+      "YourKit": "Your kit: {name}",
+      "NoTarget": "You have nothing this goes in ({fits}), or it's already upgraded.",
+      "Breakdown": "Cost #1 {cost1} + Cost #2 {cost2} + labor {labor}",
+      "BreakdownKit": "Cost #1 {cost1} + labor {labor} (your kit covers Cost #2)",
+      "KitBreakdown": "Kit {cost}. Your Tech pays Cost #1 when they install it.",
+      "AutoSuccess": "This Tech has done it before: no check needed.",
+      "KitName": "TUp kit: {name}",
+      "KitHeading": "Invented Tech Upgrade: {name}",
+      "KitRules": "Goes in: {fits}. Installing it is an Upgrade check at DV{dv} that costs materials equal to the item's price category (Cost #1); this kit covers Cost #2. A Tech who installs it once can install it again in other items for the same costs. From {shop}.",
+      "Installed": "Invented Tech Upgrade: {name}.",
+      "NewName": "New upgrade",
+      "Result": {
+        "Installed": "{tup} is installed in {item}.",
+        "KitUsed": "{item} used up.",
+        "Kit": "{item} is handed to {name}.",
+        "Invented": "{item} works. It's on sale here, for {name} only until the GM opens it up."
+      },
+      "Error": {
+        "Gone": "That upgrade isn't for sale here.",
+        "DoesntFit": "{tup} can't go in {item}, or {item} already has its upgrade."
+      },
+      "Invent": {
+        "GmAsk": "{user} pitches an upgrade for {actor} to {tech}. If it's workable, set its heat (Cost #2, the DV and the fee) and what it goes in."
+      },
+      "Stock": {
+        "Card": "Tech Upgrade stock rolled: {n} new",
+        "Nothing": "Nothing new: this shop already stocks everything that came up."
+      },
+      "Config": {
+        "Hint": "Invented Tech Upgrades this Tech sells, after the Invented Tech Upgrades DLC. Customers can hire the Tech to install one or buy the materials kit for their own Tech. Successful upgrade inventions land here too.",
+        "GeneratorHeading": "Stock generator",
+        "GeneratorHint": "Each pick rolls a d10 for heat (1-3 Mild, 4-6 Medium, 7-8 Hot, 9 Extra Hot, 10 Diablo), capped at the hottest this shop stocks, then picks an upgrade of that heat from the module's table. Roll adds to the stock; Reroll replaces earlier rolled stock and keeps the rest. Save to keep it.",
+        "Count": "Upgrades per roll",
+        "MaxHeat": "Hottest stocked",
+        "Roll": "Roll stock",
+        "Reroll": "Reroll",
+        "PricingHeading": "Installing",
+        "LaborPercent": "Labor, % of Cost #1 + #2",
+        "Minimum": "Minimum labor",
+        "AutoSuccess": "Installs always work",
+        "PricingHint": "The DLC suggests half of both costs as labor, and that a Tech installing their own upgrade simply succeeds. Turn that off to roll the Tech's Upgrade check at each upgrade's DV.",
+        "StockHeading": "For sale",
+        "Add": "Add an upgrade",
+        "Name": "Name",
+        "Cost2": "Cost #2 (eb)",
+        "Dv": "Upgrade DV",
+        "Effect": "What it does",
+        "ShareHint": "Exclusive to the customer who commissioned it. Click to sell it to everyone.",
+        "Empty": "Nothing for sale yet. Roll some stock or add an upgrade."
+      },
+      "Table": {
+        "chromeEtching": {
+          "Name": "Chrome Etching",
+          "Effect": "Laser-etched patterns with a faint glow inlay. +1 to Wardrobe & Style Checks while it's on show, and anyone who's seen it will recognize it again."
+        },
+        "glowSights": {
+          "Name": "Glow Sights",
+          "Effect": "Self-lit sight inserts. The GM treats dim light as good light when you aim this weapon. No help in total darkness."
+        },
+        "quickStraps": {
+          "Name": "Quick-Release Straps",
+          "Effect": "Magnetic clasps and pull-tabs. Putting this armor on or taking it off takes one Action."
+        },
+        "moodFinish": {
+          "Name": "Mood Finish",
+          "Effect": "The chrome's surface shifts color with your pulse. +1 to Wardrobe & Style Checks when it's visible, but anyone watching can tell when you're rattled."
+        },
+        "serialScrub": {
+          "Name": "Serial Scrub",
+          "Effect": "Maker marks and serial numbers burned off, the frame re-textured. Anyone trying to trace the weapon back to you or its seller has a harder time of it (GM's call)."
+        },
+        "dashJukebox": {
+          "Name": "Dash Jukebox",
+          "Effect": "A bootleg media rig wired into the dash, a few thousand pirate tracks deep. Long rides are a lot less dull; flavor only."
+        },
+        "whisperMode": {
+          "Name": "Whisper Mode",
+          "Effect": "Status lights, beeps and fan noise can be switched off. It still shows up on scanners."
+        },
+        "foldingFrame": {
+          "Name": "Folding Frame",
+          "Effect": "A two-handed ranged weapon folds small enough to hide under a long coat. Unfolding it takes an Action."
+        },
+        "extendedFeed": {
+          "Name": "Extended Feed",
+          "Effect": "The weapon's standard magazine holds half again as many rounds, rounded down."
+        },
+        "flexWeave": {
+          "Name": "Flex Weave",
+          "Effect": "Reworked joints and panels. This armor's penalty to REF, DEX and MOVE is 1 lower (minimum 0)."
+        },
+        "jamGuard": {
+          "Name": "Jam Guard",
+          "Effect": "A reworked feed and extractor. When this weapon would jam or break from its quality, roll 1d10: on a 6 or more it doesn't."
+        },
+        "twinRail": {
+          "Name": "Twin Rail",
+          "Effect": "A machined mount gives an Exotic Weapon without attachment slots two of them."
+        },
+        "limbLocker": {
+          "Name": "Limb Locker",
+          "Effect": "A sealed compartment in a cyberarm or cyberleg holds one concealable weapon or item without using an Option Slot."
+        },
+        "longBarrel": {
+          "Name": "Long Barrel Tune",
+          "Effect": "Re-barreled and re-sighted. A pistol uses the SMG range table; an SMG uses the Assault Rifle range table."
+        },
+        "blastPlates": {
+          "Name": "Blast Plates",
+          "Effect": "Layered reactive plates. Explosives and other area attacks don't ablate this armor."
+        },
+        "fieldFriendly": {
+          "Name": "Field-Friendly Build",
+          "Effect": "Rebuilt with standard parts and open panels. Repairs to this item are one DV step easier (DV17 becomes DV13, and so on)."
+        },
+        "burstGovernor": {
+          "Name": "Burst Governor",
+          "Effect": "A smart feed meters each burst. Autofire and Suppressive Fire with this weapon use 5 fewer rounds (minimum 5)."
+        },
+        "overpressure": {
+          "Name": "Overpressure Chamber",
+          "Effect": "A reinforced chamber for hot loads. The weapon deals +1d6 damage, to a maximum of 4d6."
+        },
+        "instinctOverlay": {
+          "Name": "Instinct Overlay",
+          "Effect": "A threat-highlighting overlay for a cybereye. +2 to Perception Checks to spot hidden people and objects. Doesn't stack with any other Perception bonus."
+        },
+        "compactMounts": {
+          "Name": "Compact Mounts",
+          "Effect": "Packs the internals tighter. The cyberlimb gains 2 Option Slots, but its Humanity Loss goes up by 1d6."
+        },
+        "crashCage": {
+          "Name": "Crash Cage",
+          "Effect": "A welded roll cage and crumple zones. Once per session, ignore one Critical Injury the vehicle would suffer."
+        },
+        "ghostReflex": {
+          "Name": "Ghost Reflex Link",
+          "Effect": "A reflex co-processor. Once per combat, add +2 to an Initiative roll. Doesn't stack with a Solo's Combat Awareness."
+        },
+        "pneumaticStride": {
+          "Name": "Pneumatic Stride",
+          "Effect": "Gas-assisted leg actuators. +1 MOVE, which doesn't stack with any other MOVE increase. They hiss: -2 to Stealth while you move."
+        },
+        "metabolicBuffer": {
+          "Name": "Metabolic Buffer",
+          "Effect": "Filters the worst of what you put in your body. Whenever you'd become addicted to a drug, roll 1d10: on a 6 or more, you don't."
+        },
+        "muscleMemory": {
+          "Name": "Muscle Memory Core",
+          "Effect": "Chosen at installation: +1 to one Skill. This stacks with other Skill increases."
+        },
+        "rotaryFeed": {
+          "Name": "Rotary Feed",
+          "Effect": "A spun-up feed system. +1 ROF, but the magazine is halved and the weapon jams on an attack roll of 1 or 2."
+        },
+        "neuralOverclock": {
+          "Name": "Neural Overclock",
+          "Effect": "Speeds up the nerves the chrome is wired into. +1 REF, to a maximum of 8."
+        },
+        "tandemTrigger": {
+          "Name": "Tandem Trigger",
+          "Effect": "A second sear and a smart trigger group. +1 ROF; attacks made with the extra shot take -1."
+        },
+        "aegisWeave": {
+          "Name": "Aegis Weave",
+          "Effect": "Woven nanofiber layers. +2 SP to every location that has SP, to a maximum of 18, with no added armor penalty."
+        }
       }
     }
   }

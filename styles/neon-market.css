@@ -1656,3 +1656,39 @@
 .neon-market-receipt footer span { font-family: var(--nc-display); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--nc-yellow); }
 .neon-market-receipt footer strong { font-family: var(--nc-display); font-size: 20px; font-weight: 400; letter-spacing: 0.04em; color: #fff; text-shadow: 0 0 10px color-mix(in srgb, var(--nm-accent) 60%, transparent); }
 .neon-market-receipt .nm-receipt-balance { margin: 4px 0 0; font-size: 12px; color: var(--nc-dim); }
+
+/* Invented Tech Upgrades: the editor's catalog cards and the shop's effect text */
+.neon-market .nm-tup-roll { display: flex; gap: 6px; align-items: flex-end; }
+.neon-market .nm-config-root :is(.nm-tup-roll button, .nm-tup-remove) {
+  height: 30px;
+  border: 1px solid var(--nc-line-2);
+  border-radius: 0;
+  background: var(--nc-bg-3);
+  color: var(--nc-text);
+  font-family: var(--nc-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: none;
+  clip-path: var(--nc-notch-sm);
+}
+.neon-market .nm-config-root :is(.nm-tup-roll button, .nm-tup-remove):hover { border-color: var(--nc-cyan); color: var(--nc-cyan); background: rgba(5, 217, 232, 0.08); }
+.neon-market .nm-tup-edit {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 8px 10px 10px 14px;
+  border: 1px solid var(--nc-line);
+  background: rgba(13, 13, 21, 0.9);
+  clip-path: var(--nc-notch-card);
+}
+.neon-market .nm-tup-edit::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--nc-cyan); box-shadow: 0 0 8px var(--nc-cyan); }
+.neon-market .nm-tup-edit-head { display: flex; align-items: center; gap: 8px; }
+.neon-market .nm-config-root .nm-tup-edit-head input[type="text"] { flex: 1; font-family: var(--nc-display); font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; }
+.neon-market .nm-tup-source { font-family: var(--nc-display); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--nc-dim); white-space: nowrap; }
+.neon-market .nm-config-root .nm-tup-remove { width: 30px; flex: none; }
+.neon-market .nm-config-root .nm-tup-edit textarea { height: auto; min-height: 48px; padding: 6px 8px; resize: vertical; }
+.neon-market .nm-tup-sells { display: flex; gap: 18px; }
+.neon-market .nm-empty-note { color: var(--nc-dim); font-style: italic; }
+.neon-market .nm-tup-effect { margin: 6px 0 10px; padding: 6px 10px; border-left: 2px solid var(--nm-accent-2); color: var(--nm-text, inherit); font-size: 13px; line-height: 1.45; }

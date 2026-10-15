@@ -11,10 +11,26 @@ export const TECH_SKILLS = ["basicTech", "cybertech", "electronics", "weaponstec
 /** Maker specialties (CRB p.147). Their ranks add to the matching checks. */
 export const MAKER = ["field", "upgrade", "fabrication", "invention"];
 
-export const TECH_SERVICES = ["repair", "upgrade", "fabricate", "invent"];
+export const TECH_SERVICES = ["repair", "upgrade", "tups", "fabricate", "invent"];
 
 /** Cyberpunk RED's price categories (CRB p.385). */
 export const CATEGORIES = ["cheap", "everyday", "costly", "premium", "expensive", "veryExpensive", "luxury", "superLuxury"];
+
+/**
+ * Heat: how hot an Invented Tech Upgrade runs, from the Invented Tech Upgrades DLC's thermometer.
+ * Cost is Cost #2 (the invention's own materials); the DV is the price category's (CRB p.148).
+ */
+export const HEAT = {
+  mild: { cost: 100, category: "premium", dv: 17 },
+  medium: { cost: 500, category: "expensive", dv: 21 },
+  hot: { cost: 1000, category: "veryExpensive", dv: 24 },
+  extraHot: { cost: 5000, category: "luxury", dv: 29 },
+  diablo: { cost: 10000, category: "superLuxury", dv: 29 }
+};
+export const HEATS = Object.keys(HEAT);
+
+/** What an Invented Tech Upgrade can be installed in. */
+export const TUP_FITS = ["any", "weapon", "melee", "ranged", "armor", "cyberware", "cyberlimb", "cybereye", "cyberdeck", "vehicle", "electronics"];
 
 /** Vehicle damage levels for repairs (CRB p.140). */
 export const VEHICLE_DAMAGE = ["minor", "major", "destroyed"];
@@ -47,9 +63,14 @@ export function defaultTech(actor) {
       vehicle: { minor: 50, major: 100, destroyed: 500 }
     },
     blueprints: [],
+    // Invented Tech Upgrades for sale. Labor is half of Cost #1 + Cost #2 (DLC), with an optional floor.
+    tups: [],
+    tupFees: { laborPercent: 50, minimum: 0 },
+    generator: { count: 3, maxHeat: "extraHot" },
     options: {
       chargeOnFailure: false,
-      feesToActor: false
+      feesToActor: false,
+      tupAutoSuccess: true
     }
   };
 }
@@ -72,9 +93,37 @@ export function normalizeTech(raw, actor) {
     b.id ||= foundry.utils.randomID(12);
     b.category = CATEGORIES.includes(b.category) ? b.category : "";
   }
+  t.tups = Array.isArray(t.tups) ? t.tups.map(normalizeTup).filter(Boolean) : [];
+  t.tupFees.laborPercent = Math.min(500, fee(t.tupFees.laborPercent, 50));
+  t.tupFees.minimum = fee(t.tupFees.minimum, 0);
+  t.generator.count = Math.min(12, Math.max(1, Math.round(num(t.generator.count, 3))));
+  if (!HEAT[t.generator.maxHeat]) t.generator.maxHeat = "extraHot";
+  t.options.tupAutoSuccess = t.options.tupAutoSuccess !== false;
   t.options.chargeOnFailure = !!t.options.chargeOnFailure;
   t.options.feesToActor = !!t.options.feesToActor;
   return t;
+}
+
+/** One Invented Tech Upgrade on sale. Cost and DV start at the heat's and can be changed by the GM. */
+export function normalizeTup(raw) {
+  const name = String(raw?.name ?? "").trim();
+  if (!name) return null;
+  const heat = HEAT[raw.heat] ? raw.heat : "medium";
+  return {
+    id: raw.id || foundry.utils.randomID(12),
+    key: String(raw.key ?? ""),
+    name,
+    effect: String(raw.effect ?? ""),
+    heat,
+    fits: TUP_FITS.includes(raw.fits) ? raw.fits : "any",
+    cost: fee(raw.cost, HEAT[heat].cost),
+    dv: Math.max(0, Math.round(num(raw.dv, HEAT[heat].dv))),
+    install: raw.install !== false,
+    kit: raw.kit !== false,
+    source: ["rolled", "custom", "invented"].includes(raw.source) ? raw.source : "custom",
+    inventedFor: String(raw.inventedFor ?? ""),
+    onlyFor: String(raw.onlyFor ?? "")
+  };
 }
 
 export function getRawTech(actor) {

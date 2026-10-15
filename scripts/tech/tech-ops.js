@@ -3,12 +3,14 @@ import { Compat } from "../compat.js";
 import { CPR } from "../cpr-adapter.js";
 import { ShopSocket } from "../socket.js";
 import { ServiceRunner } from "../services/service-runner.js";
-import { getTech, saveTech, CATEGORIES } from "./tech-data.js";
+import { getTech, saveTech, CATEGORIES, HEAT, HEATS, TUP_FITS, normalizeTup } from "./tech-data.js";
 import {
   NAH_ID, VAS_ID, CATEGORY_EB, INVENTION_CATEGORIES, INVENTION_KINDS, MAKER_FLAG, UPGRADES,
   repairNeeds, repairPlan, repairFee, vasDamage, vasRepairPlan, isVasVehicle, upgradesFor, upgradePlan,
   fabricatePlan, inventPlan, lowerHumanityFormula, chanceText
 } from "./tech-rules.js";
+import { tupFits, tupVisible, tupInstallPlan, inventTupPlan, kitTup, kitItemData, installedRecord, rollStock } from "./tups.js";
+import { formatEb } from "../shop-data.js";
 
 const { deepClone, randomID } = foundry.utils;
 const L = (key, data) => (data ? game.i18n.format(key, data) : game.i18n.localize(key));
@@ -40,7 +42,7 @@ export class TechOps {
 
     const tech = getTech(shopActor);
     if (!tech.enabled && !user.isGM) throw ServiceRunner.error("NEONMARKET.Tech.Error.Closed");
-    const service = { repair: "repair", vehicle: "repair", upgrade: "upgrade", fabricate: "fabricate", invent: "invent" }[kind];
+    const service = { repair: "repair", vehicle: "repair", upgrade: "upgrade", tupInstall: "tups", tupKit: "tups", fabricate: "fabricate", invent: "invent" }[kind];
     if (!service || !tech.services[service]) throw ServiceRunner.error("NEONMARKET.Tech.Error.NoService");
 
     const job = kind === "invent"
@@ -62,6 +64,33 @@ export class TechOps {
       },
       job
     });
+  }
+
+  /* ---------------------------------------- */
+  /*  TUp stock                               */
+  /* ---------------------------------------- */
+
+  /** Roll Invented Tech Upgrades onto a tech shop's stock and tell the GMs what came up. */
+  static async restock(tech, { count, replace = false } = {}) {
+    const result = await rollStock(tech, { count, replace }, L);
+    const esc = Handlebars.escapeExpression;
+    const items = result.added.map((t) => `<li><span><b>${esc(t.name)}</b> · ${esc(L(`NEONMARKET.Tup.Heat.${t.heat}`))} · ${esc(L(`NEONMARKET.Tup.Fits.${t.fits}`))} · ${formatEb(t.cost)}</span></li>`).join("");
+    const content = `<div class="neon-market-receipt nm-service-card is-success" style="--nm-accent:${esc(tech.identity.accent)}">`
+      + `<header><i class="fa-solid fa-microchip"></i><div><strong>${esc(tech.identity.name)}</strong><span>${esc(L("NEONMARKET.Tup.Stock.Card", { n: result.added.length }))}</span></div></header>`
+      + (items ? `<ul>${items}</ul>` : `<p>${esc(L("NEONMARKET.Tup.Stock.Nothing"))}</p>`)
+      + `</div>`;
+    await ChatMessage.create({ content, whisper: game.users.filter((u) => u.isGM).map((u) => u.id), rolls: result.rolls });
+    return result;
+  }
+
+  /** The API's restock: rolls and saves straight onto the shop. GM only. */
+  static async restockActor(actor, options = {}) {
+    if (!game.user.isGM) throw ServiceRunner.error("NEONMARKET.Error.GMOnly");
+    const tech = getTech(actor);
+    const result = await this.restock(tech, options);
+    tech.tups = result.tups;
+    await saveTech(actor, tech);
+    return result.added;
   }
 
   /** The actor a job works on: the customer, or a vehicle the user owns. */
@@ -130,6 +159,43 @@ export class TechOps {
         };
       }
 
+      case "tupInstall": {
+        const kit = params.kitItemId ? customer.items.get(params.kitItemId) : null;
+        const tup = kit ? kitTup(kit) : tech.tups.find((t) => t.id === params.tupId);
+        if (!tup || (!kit && (!tup.install || !tupVisible(tup, customer, { gm: user.isGM })))) throw ServiceRunner.error("NEONMARKET.Tup.Error.Gone");
+        const owner = await this.#target(params, customer, user);
+        const vas = !params.itemId && isVasVehicle(owner);
+        const doc = vas ? owner : owner.items.get(params.itemId);
+        if (!doc) throw ServiceRunner.error("NEONMARKET.Tech.Error.NothingToUpgrade");
+        if (!tupFits(tup, doc, { vas })) throw ServiceRunner.error("NEONMARKET.Tup.Error.DoesntFit", { tup: tup.name, item: doc.name });
+        const plan = tupInstallPlan(tech, tup, doc, { vas, kit: !!kit });
+        if (!plan) throw ServiceRunner.error("NEONMARKET.Tech.Error.NoSkill");
+        return {
+          title: `${tup.name}: ${doc.name}`,
+          plan: plan.check,
+          fee: plan.labor,
+          materials: plan.materials,
+          time: timeText(plan),
+          apply: async () => this.#installTup(tup, doc, { vas, kit, customer, tech })
+        };
+      }
+
+      case "tupKit": {
+        const tup = tech.tups.find((t) => t.id === params.tupId);
+        if (!tup || !tup.kit || !tupVisible(tup, customer, { gm: user.isGM })) throw ServiceRunner.error("NEONMARKET.Tup.Error.Gone");
+        return {
+          title: L("NEONMARKET.Tup.KitName", { name: tup.name }),
+          plan: null,
+          fee: 0,
+          materials: tup.cost,
+          apply: async () => {
+            const data = kitItemData(tup, tech.identity.name, L);
+            await customer.createEmbeddedDocuments("Item", [data]);
+            return [L("NEONMARKET.Tup.Result.Kit", { item: data.name, name: customer.name })];
+          }
+        };
+      }
+
       case "fabricate": {
         const blueprint = tech.blueprints.find((b) => b.id === params.blueprintId);
         if (!blueprint) throw ServiceRunner.error("NEONMARKET.Tech.Error.NoBlueprint");
@@ -167,8 +233,9 @@ export class TechOps {
   static async #invention(tech, shopActor, customer, params, user) {
     const name = String(params.name ?? "").trim().slice(0, 80);
     const description = String(params.description ?? "").trim().slice(0, 2000);
-    const kind = INVENTION_KINDS[params.inventionKind] ? params.inventionKind : "gear";
     if (!name || !description) throw ServiceRunner.error("NEONMARKET.Tech.Error.NeedIdea");
+    if (params.inventionKind === "upgrade") return this.#inventTup(tech, shopActor, customer, { name, description }, user);
+    const kind = INVENTION_KINDS[params.inventionKind] ? params.inventionKind : "gear";
 
     const esc = Handlebars.escapeExpression;
     const options = INVENTION_CATEGORIES.map((c) => {
@@ -207,6 +274,54 @@ export class TechOps {
         fresh.blueprints.push({ id: randomID(12), itemData, category, inventedFor: customer.name });
         await saveTech(shopActor, fresh);
         return [L("NEONMARKET.Tech.Result.Invented", { item: name })];
+      }
+    };
+  }
+
+  /**
+   * An invented upgrade: the GM sets its heat (Cost #2, the DV, the time and the fee) and what it
+   * goes in. On a success it joins the shop's TUps, sold only to the customer until the GM says
+   * otherwise: the Tech decides who gets their babies (DLC).
+   */
+  static async #inventTup(tech, shopActor, customer, { name, description }, user) {
+    const esc = Handlebars.escapeExpression;
+    const fitsGuess = guessFits(description);
+    const heatOptions = HEATS.map((h) => {
+      const p = inventTupPlan(tech, fitsGuess, h);
+      return `<option value="${h}"${h === "medium" ? " selected" : ""}>${esc(L(`NEONMARKET.Tup.Heat.${h}`))}: ${HEAT[h].cost}eb (DV${HEAT[h].dv}, ${esc(chanceText(p))})</option>`;
+    }).join("");
+    const fitsOptions = TUP_FITS.map((f) => `<option value="${f}"${f === fitsGuess ? " selected" : ""}>${esc(L(`NEONMARKET.Tup.Fits.${f}`))}</option>`).join("");
+    const answer = await Compat.DialogV2.wait({
+      classes: ["neon-market-dialog"],
+      window: { title: L("NEONMARKET.Tech.Invent.GmTitle") },
+      content: `<p>${L("NEONMARKET.Tup.Invent.GmAsk", { user: esc(user.name), actor: esc(customer.name), tech: esc(tech.identity.name) })}</p>`
+        + `<p><b>${esc(name)}</b> (${esc(L("NEONMARKET.Tech.Kind.upgrade"))})</p><p>${esc(description)}</p>`
+        + `<div class="form-group"><label>${L("NEONMARKET.Tup.HeatLabel")}</label><select name="heat">${heatOptions}</select></div>`
+        + `<div class="form-group"><label>${L("NEONMARKET.Tup.FitsLabel")}</label><select name="fits">${fitsOptions}</select></div>`,
+      buttons: [
+        { action: "ok", label: L("NEONMARKET.Tech.Invent.Approve"), default: true, callback: (event, button) => ({ heat: button.form.elements.heat.value, fits: button.form.elements.fits.value }) },
+        { action: "no", label: L("NEONMARKET.Tech.Invent.Deny"), callback: () => null }
+      ],
+      rejectClose: false
+    });
+    if (!answer || !HEAT[answer.heat]) throw ServiceRunner.error("NEONMARKET.Error.Denied");
+    const fits = TUP_FITS.includes(answer.fits) ? answer.fits : "any";
+
+    const plan = inventTupPlan(tech, fits, answer.heat);
+    if (!plan) throw ServiceRunner.error("NEONMARKET.Tech.Error.NoSkill");
+    return {
+      title: `${L("NEONMARKET.Tech.Service.invent")}: ${name}`,
+      plan,
+      fee: plan.fee,
+      time: timeText(plan),
+      approve: async () => {},
+      apply: async () => {
+        const fresh = getTech(shopActor);
+        fresh.tups.push(normalizeTup({
+          name, effect: description, heat: answer.heat, fits, source: "invented", inventedFor: customer.name, onlyFor: customer.uuid
+        }));
+        await saveTech(shopActor, fresh);
+        return [L("NEONMARKET.Tup.Result.Invented", { item: name, name: customer.name })];
       }
     };
   }
@@ -269,6 +384,26 @@ export class TechOps {
     return lines;
   }
 
+  /** Install a TUp: record it as the item's one upgrade and write it into the item's description. */
+  static async #installTup(tup, doc, { vas, kit, customer, tech }) {
+    const by = tech.identity.tech || tech.identity.name;
+    await doc.setFlag(MODULE_ID, MAKER_FLAG, installedRecord(tup, by));
+    if (!vas && doc.system?.description) {
+      const esc = Handlebars.escapeExpression;
+      const line = `<p><strong>${esc(L("NEONMARKET.Tup.Installed", { name: tup.name }))}</strong> ${esc(tup.effect)}</p>`;
+      await doc.update({ "system.description.value": `${line}${doc.system.description.value ?? ""}` });
+    }
+    const lines = [L("NEONMARKET.Tup.Result.Installed", { tup: tup.name, item: doc.name })];
+    if (tup.effect) lines.push(tup.effect);
+    if (kit) {
+      const amount = Number(kit.system?.amount) || 1;
+      if (amount > 1) await kit.update({ "system.amount": amount - 1 });
+      else await customer.deleteEmbeddedDocuments("Item", [kit.id]);
+      lines.push(L("NEONMARKET.Tup.Result.KitUsed", { item: kit.name }));
+    }
+    return lines;
+  }
+
   static async #upgrade(doc, option, note, tech) {
     const lines = [];
     const rolls = [];
@@ -314,6 +449,20 @@ export class TechOps {
     await doc.setFlag(MODULE_ID, MAKER_FLAG, { upgrade: option, note, by: tech.identity.tech || tech.identity.name, at: Date.now() });
     return { lines, rolls };
   }
+}
+
+/** A first guess at what an invented upgrade goes in, from words in the pitch. The GM confirms it. */
+function guessFits(text) {
+  const t = String(text).toLowerCase();
+  if (/\b(cyberdeck|deck)\b/.test(t)) return "cyberdeck";
+  if (/\b(cyberarm|cyberleg|cyberlimb|arm|leg)\b/.test(t)) return "cyberlimb";
+  if (/\b(cybereye|eye|optic)/.test(t)) return "cybereye";
+  if (/\bcyber/.test(t)) return "cyberware";
+  if (/\b(car|bike|truck|vehicle|av|boat|ride)\b/.test(t)) return "vehicle";
+  if (/\b(armor|armour|jacket|vest|helmet|suit)\b/.test(t)) return "armor";
+  if (/\b(blade|sword|knife|katana|club|bat|melee)\b/.test(t)) return "melee";
+  if (/\b(gun|pistol|rifle|shotgun|smg|barrel|ammo|magazine)\b/.test(t)) return "ranged";
+  return "any";
 }
 
 /** "1 week", "2 weeks", "3 months" for the chat card and the window. */

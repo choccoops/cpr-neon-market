@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.5.0
+
+Invented Tech Upgrades, after the Invented Tech Upgrades DLC.
+
+- **Tech Upgrades for sale.** A tech shop can sell upgrades its Tech already invented. Customers have one installed (Cost #1 for the item's category, Cost #2 for the upgrade, and 50% of both as labor), or buy the materials kit for Cost #2 and have their own Tech install it. Kits brought back to the shop can be installed there for Cost #1 and labor.
+- **Heat.** Each upgrade has a heat from the DLC's thermometer, Mild to Diablo, which sets its Cost #2 and DV. Both stay editable.
+- **Stock generator.** Roll a few ready-made upgrades onto a shop: a d10 for heat, capped at the hottest the shop carries, then one of 29 upgrades of that heat. Reroll replaces only rolled stock. Also as `api.rollTechUpgrades(actor, { count, replace })`.
+- **Installs just work** by default, as the DLC suggests; switch it off to roll the Tech's Upgrade check at the upgrade's DV.
+- **Inventing upgrades.** Pitch an upgrade instead of an item: the GM sets its heat and what it goes in. On a success it goes on sale at the shop, only for the customer who paid for it until the GM shares it.
+- An installed upgrade counts as the item's one upgrade and is written into the item's description.
+
 ## 1.4.0
 
 Tech shops: repairs, upgrades, fabrication and invention.

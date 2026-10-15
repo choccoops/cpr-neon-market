@@ -119,6 +119,11 @@ Hooks.once("init", () => {
     getTech: async (target) => getTech(await resolveActor(target)),
     setTech: async (target, data) => saveTech(await resolveActor(target), data),
     isTech,
+    /**
+     * GM: roll Invented Tech Upgrades onto a tech shop's stock from the Heat/Cost table.
+     * options: { count, replace } — replace swaps out earlier rolled stock and keeps the rest.
+     */
+    rollTechUpgrades: async (target, options) => TechOps.restockActor(await resolveActor(target), options),
     apps: { ShopApp, ShopConfigApp, ClinicApp, ClinicConfigApp, TechApp, TechConfigApp }
   };
   game.modules.get(MODULE_ID).api = api;
