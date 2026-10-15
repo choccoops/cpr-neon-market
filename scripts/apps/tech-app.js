@@ -9,6 +9,7 @@ import {
   UPGRADES, INVENTION_KINDS, isGear, isVasVehicle, vasDamage, repairNeeds, repairPlan, repairFee, vasRepairPlan,
   upgradesFor, upgradePlan, fabricatePlan, chanceText, marketPrice, categoryOf
 } from "../tech/tech-rules.js";
+import { TUP_ICON, tupFits, tupVisible, tupInstallPlan, kitTup } from "../tech/tups.js";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const L = (k, d) => (d ? game.i18n.format(k, d) : game.i18n.localize(k));
@@ -16,6 +17,7 @@ const L = (k, d) => (d ? game.i18n.format(k, d) : game.i18n.localize(k));
 const TABS = {
   repair: "fa-solid fa-toolbox",
   upgrade: "fa-solid fa-arrow-up-right-dots",
+  tups: "fa-solid fa-microchip",
   fabricate: "fa-solid fa-industry",
   invent: "fa-solid fa-lightbulb"
 };
@@ -38,6 +40,8 @@ export class TechApp extends HandlebarsApplicationMixin(ApplicationV2) {
       focus: null,
       vehicleDamage: "major",
       upgrade: {},
+      tupMode: {},
+      tupTarget: {},
       note: "",
       invention: { name: "", kind: "gear", description: "" },
       speech: null,
@@ -231,6 +235,33 @@ export class TechApp extends HandlebarsApplicationMixin(ApplicationV2) {
           }, plan, plan?.fee, plan?.materials, wealth));
         }
       }
+    } else if (s.tab === "tups") {
+      const gm = game.user.isGM;
+      const offers = tech.tups.filter((t) => (t.install || t.kit) && tupVisible(t, customer, { gm })).map((tup) => ({ tup, key: `tup:${tup.id}` }));
+      const kits = customer.items.filter((i) => kitTup(i)).map((kit) => ({ tup: kitTup(kit), kit, key: `kit:${kit.id}` }));
+      for (const { tup, kit, key } of [...kits, ...offers]) {
+        const modes = kit ? ["install"] : ["install", "kit"].filter((m) => tup[m]);
+        const mode = modes.includes(s.tupMode[key]) ? s.tupMode[key] : modes[0];
+        const heat = L(`NEONMARKET.Tup.Heat.${tup.heat}`);
+        const base = {
+          key, tup, kitItemId: kit?.id ?? null, tupId: kit ? null : tup.id, img: kit?.img ?? TUP_ICON,
+          name: kit ? L("NEONMARKET.Tup.YourKit", { name: tup.name }) : tup.name,
+          sub: [heat, L(`NEONMARKET.Tup.Fits.${tup.fits}`), tup.onlyFor ? L("NEONMARKET.Tup.Exclusive", { name: tup.inventedFor || "?" }) : null].filter(Boolean).join(" · "),
+          modes, mode, meta: L("NEONMARKET.Tup.Meta", { dv: tup.dv })
+        };
+        if (mode === "kit") {
+          out.push(this.#row({ ...base, kind: "tupKit" }, null, 0, tup.cost, wealth));
+          continue;
+        }
+        const targets = this.#tupTargets(tup, owners, customer);
+        const target = targets.find((t) => t.value === s.tupTarget[key]) ?? targets[0];
+        const plan = target ? tupInstallPlan(tech, tup, target.doc, { vas: target.vas, kit: !!kit }) : null;
+        out.push(this.#row({
+          ...base, kind: "tupInstall", targets, target, install: plan, actorUuid: target?.actorUuid, itemId: target?.itemId,
+          timeText: plan ? timeText(plan) : null,
+          blocked: !target ? L("NEONMARKET.Tup.NoTarget", { fits: L(`NEONMARKET.Tup.Fits.${tup.fits}`) }) : plan ? null : L("NEONMARKET.Tech.Error.NoSkill")
+        }, plan?.check ?? null, plan?.labor ?? 0, plan?.materials ?? 0, wealth));
+      }
     } else if (s.tab === "fabricate") {
       for (const bp of tech.blueprints) {
         const plan = fabricatePlan(tech, bp);
@@ -243,6 +274,20 @@ export class TechApp extends HandlebarsApplicationMixin(ApplicationV2) {
     } else if (s.tab === "invent") {
       out.push(this.#row({ key: "invent", kind: "invent", icon: "fa-solid fa-lightbulb", name: L("NEONMARKET.Tech.Invent.Row"), sub: L("NEONMARKET.Tech.Invent.RowSub") }, null, 0, 0, wealth));
       out[0].price = L("NEONMARKET.Tech.Invent.GmPrices");
+    }
+    return out;
+  }
+
+  /** Items (and VAS vehicles) this TUp could be installed in: the customer's and their vehicles'. */
+  #tupTargets(tup, owners, customer) {
+    const out = [];
+    for (const owner of owners) {
+      const vas = owner !== customer;
+      if (vas && tupFits(tup, owner, { vas: true })) out.push({ value: `${owner.uuid}|`, label: owner.name, doc: owner, vas: true, actorUuid: owner.uuid, itemId: null });
+      for (const item of owner.items) {
+        if (!tupFits(tup, item)) continue;
+        out.push({ value: `${owner.uuid}|${item.id}`, label: vas ? `${item.name} (${owner.name})` : item.name, doc: item, vas: false, actorUuid: owner.uuid, itemId: item.id });
+      }
     }
     return out;
   }
@@ -278,6 +323,23 @@ export class TechApp extends HandlebarsApplicationMixin(ApplicationV2) {
       detail.note = s.note;
       if (detail.needsNote && !s.note.trim()) detail.canBook = false;
     }
+    if (row.kind === "tupInstall" || row.kind === "tupKit") {
+      const tup = row.tup;
+      detail.effect = tup.effect;
+      detail.heatLine = L("NEONMARKET.Tup.HeatLine", { heat: L(`NEONMARKET.Tup.Heat.${tup.heat}`), cost: formatEb(tup.cost), dv: tup.dv });
+      if (row.modes.length > 1) detail.tupModes = row.modes.map((m) => ({ key: m, label: L(`NEONMARKET.Tup.Mode.${m}`), selected: m === row.mode }));
+      if (row.kind === "tupInstall") {
+        if (row.targets.length) detail.tupTargets = row.targets.map((t) => ({ value: t.value, label: t.label, selected: t === row.target }));
+        if (row.install) {
+          detail.breakdown = L(row.kitItemId ? "NEONMARKET.Tup.BreakdownKit" : "NEONMARKET.Tup.Breakdown", {
+            cost1: formatEb(row.install.cost1), cost2: formatEb(row.install.cost2), labor: formatEb(row.install.labor)
+          });
+          if (!row.plan) detail.check = L("NEONMARKET.Tup.AutoSuccess");
+        }
+      } else {
+        detail.breakdown = L("NEONMARKET.Tup.KitBreakdown", { cost: formatEb(tup.cost) });
+      }
+    }
     if (row.kind === "fabricate") {
       detail.stats = CPR.statLines(row.blueprint.itemData);
       detail.inventedFor = row.blueprint.inventedFor ?? null;
@@ -285,7 +347,7 @@ export class TechApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (row.kind === "invent") {
       detail.invention = {
         ...s.invention,
-        kinds: Object.keys(INVENTION_KINDS).map((k) => ({ key: k, label: L(`NEONMARKET.Tech.Kind.${k}`), selected: k === s.invention.kind }))
+        kinds: [...Object.keys(INVENTION_KINDS), "upgrade"].map((k) => ({ key: k, label: L(`NEONMARKET.Tech.Kind.${k}`), selected: k === s.invention.kind }))
       };
       detail.canBook = !s.busy && !!s.invention.name.trim() && !!s.invention.description.trim();
     }
@@ -325,6 +387,14 @@ export class TechApp extends HandlebarsApplicationMixin(ApplicationV2) {
     });
     on("select[name=vehicleDamage]", "change", (ev) => {
       s.vehicleDamage = ev.currentTarget.value;
+      this.render();
+    });
+    on("select[name=tupMode]", "change", (ev) => {
+      s.tupMode[s.focus] = ev.currentTarget.value;
+      this.render();
+    });
+    on("select[name=tupTarget]", "change", (ev) => {
+      s.tupTarget[s.focus] = ev.currentTarget.value;
       this.render();
     });
     on("select[name=upgrade]", "change", (ev) => {
@@ -452,6 +522,8 @@ export class TechApp extends HandlebarsApplicationMixin(ApplicationV2) {
       upgrade: row.chosen,
       note: s.note,
       blueprintId: row.blueprintId,
+      tupId: row.tupId,
+      kitItemId: row.kitItemId,
       name: s.invention.name,
       inventionKind: s.invention.kind,
       description: s.invention.description

@@ -77,6 +77,26 @@
           </div>
           <p class="nm-desc">{{focus.rule}}</p>
 
+          {{#if focus.heatLine}}<p class="nm-clinic-line"><i class="fa-solid fa-temperature-high"></i> {{focus.heatLine}}</p>{{/if}}
+          {{#if focus.effect}}<p class="nm-tup-effect">{{focus.effect}}</p>{{/if}}
+
+          {{#if focus.tupModes}}
+          <label class="nm-clinic-field">
+            <span>{{localize "NEONMARKET.Tup.ModeLabel"}}</span>
+            <select name="tupMode">
+              {{#each focus.tupModes}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+            </select>
+          </label>
+          {{/if}}
+          {{#if focus.tupTargets}}
+          <label class="nm-clinic-field">
+            <span>{{localize "NEONMARKET.Tup.TargetLabel"}}</span>
+            <select name="tupTarget">
+              {{#each focus.tupTargets}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+            </select>
+          </label>
+          {{/if}}
+
           {{#if focus.lines.length}}
           <ul class="nm-tech-list">{{#each focus.lines}}<li>{{this}}</li>{{/each}}</ul>
           {{/if}}

@@ -3,7 +3,8 @@ import { Compat } from "../compat.js";
 import { CPR } from "../cpr-adapter.js";
 import { formatEb } from "../shop-data.js";
 import { TechApp } from "./tech-app.js";
-import { getTech, saveTech, TECH_SKILLS, MAKER, TECH_SERVICES, CATEGORIES, VEHICLE_DAMAGE } from "../tech/tech-data.js";
+import { getTech, saveTech, normalizeTech, normalizeTup, TECH_SKILLS, MAKER, TECH_SERVICES, CATEGORIES, VEHICLE_DAMAGE, HEAT, HEATS, TUP_FITS } from "../tech/tech-data.js";
+import { TechOps } from "../tech/tech-ops.js";
 import { marketPrice, categoryOf } from "../tech/tech-rules.js";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -56,6 +57,10 @@ export class TechConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
       pickFile: TechConfigApp.#onPickFile,
       readTech: TechConfigApp.#onReadTech,
       removeBlueprint: TechConfigApp.#onRemoveBlueprint,
+      rollTups: TechConfigApp.#onRollTups,
+      addTup: TechConfigApp.#onAddTup,
+      removeTup: TechConfigApp.#onRemoveTup,
+      shareTup: TechConfigApp.#onShareTup,
       preview: TechConfigApp.#onPreview,
       openTech: TechConfigApp.#onOpenTech,
       save: TechConfigApp.#onSave
@@ -86,7 +91,7 @@ export class TechConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   async _prepareContext() {
     const d = this.draft;
-    const tabs = ["identity", "tech", "fees", "blueprints", "options"].map((key) => ({
+    const tabs = ["identity", "tech", "fees", "tups", "blueprints", "options"].map((key) => ({
       key, label: L(`NEONMARKET.Tech.Config.Tab.${key}`), active: key === this.activeTab
     }));
     return {
@@ -100,6 +105,15 @@ export class TechConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
       services: TECH_SERVICES.map((key) => ({ key, label: L(`NEONMARKET.Tech.Service.${key}`), checked: d.services[key] })),
       labor: CATEGORIES.map((key) => ({ key, label: L(`NEONMARKET.Tier.${tierKey(key)}`), value: d.fees.labor[key] })),
       vehicle: VEHICLE_DAMAGE.map((key) => ({ key, label: L(`NEONMARKET.Tech.Damage.${key}`), value: d.fees.vehicle[key] })),
+      maxHeats: HEATS.map((h) => ({ key: h, label: L(`NEONMARKET.Tup.Heat.${h}`), selected: h === d.generator.maxHeat })),
+      tups: d.tups.map((t, index) => ({
+        ...t,
+        index,
+        sourceLabel: t.source === "invented" && t.inventedFor ? L("NEONMARKET.Tech.InventedFor", { name: t.inventedFor }) : L(`NEONMARKET.Tup.Source.${t.source}`),
+        exclusive: t.onlyFor ? L("NEONMARKET.Tup.Exclusive", { name: t.inventedFor || "?" }) : null,
+        heats: HEATS.map((h) => ({ key: h, label: `${L(`NEONMARKET.Tup.Heat.${h}`)} (${formatEb(HEAT[h].cost)})`, selected: h === t.heat })),
+        fitsList: TUP_FITS.map((f) => ({ key: f, label: L(`NEONMARKET.Tup.Fits.${f}`), selected: f === t.fits }))
+      })),
       blueprints: d.blueprints.map((b, index) => {
         const price = marketPrice(b.itemData);
         return {
@@ -149,6 +163,12 @@ export class TechConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
         : String(raw);
     setProperty(this.draft, path, value);
     this.dirty = true;
+    // A new heat brings its Cost #2 and DV; the GM can still change them after.
+    const heat = /^tups\.(\d+)\.heat$/.exec(path);
+    if (heat && HEAT[value]) {
+      Object.assign(this.draft.tups[Number(heat[1])], { cost: HEAT[value].cost, dv: HEAT[value].dv });
+      this.render();
+    }
     this.element.querySelector(".nm-config-dirty")?.classList.add("visible");
     if (path === "theme" && THEMES[value]) {
       this.draft.identity.accent = THEMES[value].accent;
@@ -246,6 +266,34 @@ export class TechConfigApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const index = Number(target.dataset.index);
     if (!Number.isInteger(index)) return;
     this.draft.blueprints.splice(index, 1);
+    this.#touch();
+  }
+
+  /** Roll stock from the Heat/Cost table into the draft. "replace" swaps out earlier rolled stock. */
+  static async #onRollTups(event, target) {
+    const tech = normalizeTech(this.draft, this.actor);
+    const result = await TechOps.restock(tech, { replace: target.dataset.replace === "true" });
+    this.draft.tups = result.tups;
+    this.#touch();
+  }
+
+  static #onAddTup() {
+    this.draft.tups.push(normalizeTup({ name: L("NEONMARKET.Tup.NewName"), heat: "medium", source: "custom" }));
+    this.#touch();
+  }
+
+  static #onRemoveTup(event, target) {
+    const index = Number(target.dataset.index);
+    if (!Number.isInteger(index)) return;
+    this.draft.tups.splice(index, 1);
+    this.#touch();
+  }
+
+  /** Sell an exclusive TUp to everyone. */
+  static #onShareTup(event, target) {
+    const tup = this.draft.tups[Number(target.dataset.index)];
+    if (!tup) return;
+    tup.onlyFor = "";
     this.#touch();
   }
 
