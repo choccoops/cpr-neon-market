@@ -195,6 +195,8 @@ in the book, so the defaults are this module's; every fee is editable and 0 make
 
 ### Invented Tech Upgrades
 
+![Tech Upgrades for sale in a tech shop](docs/tech-upgrades.png)
+
 Following the *Invented Tech Upgrades* DLC, a Tech can sell upgrades they've already invented, so
 crews don't need their own Tech to invent them. On the editor's **Tech Upgrades** tab:
 
@@ -207,6 +209,8 @@ crews don't need their own Tech to invent them. On the editor's **Tech Upgrades*
 - **Add an upgrade** for your own, or for the DLC's examples: name, heat, what it goes in, and what it
   does. Each can be sold installed, as a kit, or both.
 - Labor is 50% of Cost #1 + Cost #2, as the DLC suggests, with an optional minimum.
+
+![The Tech Upgrades editor and a stock roll](docs/tech-upgrades-config.png)
 
 Customers find them on the shop's **Tech Upgrades** tab, choose to have one installed (and in which of
 their items) or buy the kit. Kits a customer carries show up there too, to be installed for Cost #1
