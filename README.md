@@ -16,8 +16,13 @@ with eurobucks that land in the CPR wealth ledger.
 ## Install
 
 **From a manifest URL (recommended, gets automatic updates):** in Foundry's setup screen open
-*Add-on Modules*, click *Install Module*, paste the manifest URL from the project's release page
-and click *Install*. See [PUBLISHING.md](PUBLISHING.md) for the URL format.
+*Add-on Modules*, click *Install Module*, paste this manifest URL and click *Install*:
+
+```
+https://github.com/choccoops/cpr-neon-market/releases/latest/download/module.json
+```
+
+It always points to the newest release, so Foundry's *Check for Updates* picks up new versions.
 
 **By hand:** unzip `module.zip` into your Foundry `Data/modules/cpr-neon-market/` folder, so you
 end up with `Data/modules/cpr-neon-market/module.json`.

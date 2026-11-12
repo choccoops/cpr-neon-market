@@ -11,14 +11,14 @@ The project has to be public so Foundry can download from it.
 **GitHub**
 
 ```bash
-git remote add origin https://github.com/YOUR-NAME/cpr-neon-market.git
+git remote add origin https://github.com/choccoops/cpr-neon-market.git
 git push -u origin main --tags
 ```
 
-**GitLab**
+**GitLab** (optional mirror; this project is published on GitHub)
 
 ```bash
-git remote add origin https://gitlab.com/YOUR-NAME/cpr-neon-market.git
+git remote add origin https://gitlab.com/YOUR-GITLAB-NAME/cpr-neon-market.git
 git push -u origin main --tags
 ```
 
@@ -27,8 +27,8 @@ Pushing the `v1.1.0` tag runs the first release. Check the **Actions** tab (GitH
 
 **Manifest URL to give players and to paste into Foundry's Install Module box:**
 
-- GitHub: `https://github.com/YOUR-NAME/cpr-neon-market/releases/latest/download/module.json`
-- GitLab: `https://gitlab.com/YOUR-NAME/cpr-neon-market/-/releases/permalink/latest/downloads/module.json`
+- GitHub: `https://github.com/choccoops/cpr-neon-market/releases/latest/download/module.json`
+- GitLab mirror: `https://gitlab.com/YOUR-GITLAB-NAME/cpr-neon-market/-/releases/permalink/latest/downloads/module.json`
 
 Install from that URL once (replacing any copy you unzipped by hand). From then on,
 Foundry's **Check for Updates** picks up every new release.
